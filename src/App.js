@@ -5,11 +5,6 @@ import "leaflet/dist/leaflet.css";
 
 const mapStyle = { height: "100vh", width: "100%" };
 
-// Custom ship icon
-const shipIcon = new L.Icon({
-  iconUrl: "https://upload.wikimedia.org/wikipedia/commons/5/5f/Ship_icon.png",
-  iconSize: [30, 30],
-});
 
 // Predefined ship routes
 const routes = [
@@ -71,13 +66,21 @@ const Map = () => {
 
       {/* Simulated Ships Following Routes */}
       {ships.map((ship) => (
-        <Marker key={ship.id} position={[ship.latitude, ship.longitude]} icon={shipIcon}>
+        <CircleMarker
+          key={ship.id}
+          center={[ship.latitude, ship.longitude]}
+          radius={5} // Adjust the size of the dot
+          color="white" // Outline color
+          fillColor="white" // Fill color
+          fillOpacity={1} // Make it solid
+        >
           <Popup>
             <b>🚢 Simulated Ship {ship.id}</b><br />
             <b>Speed:</b> {ship.speedOverGround} knots
           </Popup>
-        </Marker>
+        </CircleMarker>
       ))}
+
     </MapContainer>
   );
 };
