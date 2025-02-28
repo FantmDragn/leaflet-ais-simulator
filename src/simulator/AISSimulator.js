@@ -14,12 +14,13 @@ export class AISSimulator {
       id: `ship-${index + 1}`,
       route,
       currentWaypoint: 0,
-      latitude: route.length > 0 ? route[0][0] : 0, 
-      longitude: route.length > 0 ? route[0][1] : 0, 
+      latitude: route[0][0], 
+      longitude: route[0][1], 
       speedOverGround: (Math.random() * 10 + 5).toFixed(2), // Add random speed
+      heading: 0, // Default heading
+      trail: [], // Stores the last positions
     }));
   }
-  
 
   startSimulation() {
     if (this.interval) return; // Prevent multiple intervals
@@ -40,12 +41,11 @@ export class AISSimulator {
 
         let waypoint = ship.route[nextWaypoint];
 
-        // 🚨 FIX: Convert waypoint object `{ lat, lon }` to array `[lat, lon]` if needed
+        // Convert waypoint object `{ lat, lon }` to array `[lat, lon]` if needed
         if (waypoint && typeof waypoint === "object" && waypoint.lat !== undefined && waypoint.lon !== undefined) {
           waypoint = [waypoint.lat, waypoint.lon];
         }
 
-        // Ensure the waypoint is valid before using it
         if (!Array.isArray(waypoint) || waypoint.length !== 2) {
           console.error(`❌ Ship ${ship.id} has an invalid waypoint!`, waypoint);
           return { ...ship, latitude: 0, longitude: 0 }; // Prevent crash
@@ -60,6 +60,7 @@ export class AISSimulator {
           latitude: newLat,
           longitude: newLon,
           heading,
+          trail: [...ship.trail, [ship.latitude, ship.longitude]].slice(-10), // Store last 10 positions
         };
       });
 
@@ -80,4 +81,3 @@ export class AISSimulator {
     }
   }
 }
-
