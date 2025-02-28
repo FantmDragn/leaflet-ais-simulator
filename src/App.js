@@ -1,24 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, CircleMarker, Popup, Polyline } from "react-leaflet";
+import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { AISSimulator } from "./simulator/AISSimulator";
-import Controls from "./components/Controls";
-import "react-leaflet-arrowheads";
+import { generateDetailedRoute, generateRandomRoutes } from "./utils/routeUtils"; // ✅ Import route functions
+import Controls from "./components/Controls"; 
 
 const mapStyle = { height: "90vh", width: "100%" };
 
-const routes = [
+// 🌊 Base routes - Move ships FARTHER offshore
+const baseRoutes = [
   [
-    { lat: 37.7749, lon: -122.4194 },
-    { lat: 36.8508, lon: -121.5000 },
-    { lat: 34.0522, lon: -118.2437 },
+    { lat: 36.7749, lon: -127.4194 }, 
+    { lat: 35.8508, lon: -126.5000 }, 
+    { lat: 33.0522, lon: -123.2437 }, 
   ],
   [
-    { lat: 40.7128, lon: -74.0060 },
-    { lat: 39.2904, lon: -76.6122 },
-    { lat: 38.9072, lon: -77.0369 },
+    { lat: 39.7128, lon: -130.0060 }, 
+    { lat: 38.2904, lon: -128.6122 }, 
+    { lat: 37.9072, lon: -127.0369 }, 
   ],
 ];
+
+// ✅ Generate multiple ships with varied routes
+const routes = generateRandomRoutes(baseRoutes, 5); // 🚢 Create 5x more ships
 
 const App = () => {
   const [ships, setShips] = useState([]);
@@ -26,8 +30,12 @@ const App = () => {
   const [isRunning, setIsRunning] = useState(false);
 
   useEffect(() => {
-    const aisSim = new AISSimulator(routes, setShips);
+    const detailedRoutes = routes.map(route => generateDetailedRoute(route, 15, 2000));
+    console.log(`🚢 Generated ${detailedRoutes.length} ship routes`);
+
+    const aisSim = new AISSimulator(detailedRoutes, setShips);
     setSimulator(aisSim);
+
     return () => aisSim.stopSimulation();
   }, []);
 
@@ -45,60 +53,37 @@ const App = () => {
     }
   };
 
-  const resetSimulation = () => {
-    if (simulator) {
-      simulator.resetSimulation();
-      setIsRunning(false);
-    }
-  };
-
   return (
     <div>
-      <Controls onStart={startSimulation} onStop={stopSimulation} onReset={resetSimulation} isRunning={isRunning} />
+      <Controls 
+        onStart={startSimulation} 
+        onStop={stopSimulation} 
+        isRunning={isRunning} 
+      />
 
-      <MapContainer center={[37, -95]} zoom={4} style={mapStyle}>
+      <MapContainer center={[30, -90]} zoom={3} style={mapStyle}> {/* ✅ Adjusted to show full ocean */}
         <TileLayer
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
           attribution='&copy; OpenStreetMap contributors'
         />
 
-        {/* Render Ship Trails */}
-        {ships.map((ship) => (
-          <Polyline key={`trail-${ship.id}`} positions={ship.trail} color="blue" weight={2} opacity={0.7} />
-        ))}
-
-        {/* Render Directional Arrows */}
-        {ships.map((ship) => {
-          if (ship.trail.length < 2) return null; // Skip if no movement history
-
-          return (
-            <Polyline
-              key={`arrow-${ship.id}`}
-              positions={[ship.trail[ship.trail.length - 2], [ship.latitude, ship.longitude]]}
-              color="yellow"
-              weight={3}
-              arrowheads={{ size: "10px", frequency: "end-only", yawn: 30 }}
-            />
-          );
-        })}
-
-        {/* Render Ships as White Dots */}
-        {ships.map((ship) => (
-          <CircleMarker
-            key={ship.id}
-            center={[ship.latitude, ship.longitude]}
-            radius={6}
-            color="white"
-            fillColor="white"
-            fillOpacity={1}
-            weight={2}
-          >
-            <Popup>
-              <b>🚢 Simulated Ship {ship.id}</b><br />
-              <b>Speed:</b> {ship.speedOverGround} knots<br />
-              <b>Heading:</b> {ship.heading}°
-            </Popup>
-          </CircleMarker>
+        {ships
+          .filter((ship) => ship.latitude !== undefined && ship.longitude !== undefined)
+          .map((ship) => (
+            <CircleMarker
+              key={ship.id}
+              center={[ship.latitude, ship.longitude]}
+              radius={6}
+              color="white"
+              fillColor="white"
+              fillOpacity={1}
+              weight={2}
+            >
+              <Popup>
+                <b>🚢 Simulated Ship {ship.id}</b><br />
+                <b>Speed:</b> {ship.speedOverGround} knots
+              </Popup>
+            </CircleMarker>
         ))}
       </MapContainer>
     </div>
