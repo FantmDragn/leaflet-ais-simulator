@@ -2,7 +2,7 @@ import { calculateBearing } from "../utils/routeUtils";
 
 export class AISSimulator {
   constructor(routes, updateCallback, intervalMs = 2000) {
-    this.routes = routes;
+    this.routes = routes; // Already interpolated routes
     this.updateCallback = updateCallback;
     this.intervalMs = intervalMs;
     this.ships = this.generateShips();
@@ -14,8 +14,8 @@ export class AISSimulator {
       id: `ship-${index + 1}`,
       route,
       currentWaypoint: 0,
-      latitude: route[0][0],
-      longitude: route[0][1],
+      latitude: route[0][0], // Use detailed waypoint format
+      longitude: route[0][1], // Use detailed waypoint format
       heading: route.length > 1 ? calculateBearing(route[0], route[1]) : 0, // Initial heading
     }));
   }

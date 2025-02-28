@@ -5,28 +5,33 @@ import { generateDetailedRoute } from "../utils/routeUtils";
 
 const initialRoutes = [
   [
-    [51.000, -4.000],
+    [51.000, -4.000], // Offshore start
     [51.500, -3.500],
     [52.000, -3.000],
     [52.500, -2.500],
-    [53.000, -2.000],
+    [53.000, -2.000], // End miles offshore
   ],
   [
-    [50.500, -5.000],
+    [50.500, -5.000], // Another offshore ship route
     [51.000, -4.500],
     [51.500, -4.000],
     [52.000, -3.500],
-    [52.500, -3.000],
+    [52.500, -3.000], // Farther offshore
   ],
 ];
 
 export default function MapComponent() {
   const [ships, setShips] = useState([]);
   const [simulator, setSimulator] = useState(null);
+  const [detailedRoutes, setDetailedRoutes] = useState([]); // Store interpolated routes
 
   useEffect(() => {
-    const detailedRoutes = initialRoutes.map(route => generateDetailedRoute(route, 15, 2000));
-    const aisSim = new AISSimulator(detailedRoutes, setShips, 2000);
+    // Generate detailed routes (~15m spaced waypoints)
+    const interpolatedRoutes = initialRoutes.map(route => generateDetailedRoute(route, 15, 2000));
+    setDetailedRoutes(interpolatedRoutes); // Store the detailed routes
+
+    // Initialize the AIS Simulator with detailed routes
+    const aisSim = new AISSimulator(interpolatedRoutes, setShips, 2000);
     aisSim.startSimulation();
     setSimulator(aisSim);
 
@@ -46,8 +51,8 @@ export default function MapComponent() {
         </Marker>
       ))}
 
-      {/* Optional: Draw ship routes */}
-      {initialRoutes.map((route, index) => (
+      {/* Draw correct detailed routes */}
+      {detailedRoutes.map((route, index) => (
         <Polyline key={index} positions={route} color="blue" />
       ))}
     </MapContainer>
