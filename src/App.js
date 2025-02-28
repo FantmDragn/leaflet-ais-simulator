@@ -68,16 +68,19 @@ const Map = () => {
         <CircleMarker
           key={ship.id}
           center={[ship.latitude, ship.longitude]}
-          radius={5} // Adjust the size of the dot
-          color="white" // Outline color
-          fillColor="white" // Fill color
-          fillOpacity={1} // Make it solid
+          radius={6} // Increase size for visibility
+          stroke={true}
+          color="white" // Ensure outline is white
+          fillColor="white" // Ensure fill is white
+          fillOpacity={1} // Make fully visible
+          weight={2} // Thicker outline for visibility
         >
           <Popup>
             <b>🚢 Simulated Ship {ship.id}</b><br />
             <b>Speed:</b> {ship.speedOverGround} knots
           </Popup>
-        </CircleMarker>
+      </CircleMarker>
+      
       ))}
 
     </MapContainer>
