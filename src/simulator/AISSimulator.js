@@ -10,23 +10,16 @@ export class AISSimulator {
   }
 
   generateShips() {
-    return this.routes.map((route, index) => {
-      // Ensure the route isn't empty
-      if (!Array.isArray(route) || route.length === 0) {
-        console.warn(`⚠️ Route for ship-${index + 1} is empty!`);
-        route = [[0, 0]]; // Default to prevent crashes
-      }
-
-      return {
-        id: `ship-${index + 1}`,
-        route,
-        currentWaypoint: 0,
-        latitude: route[0][0],
-        longitude: route[0][1],
-        heading: route.length > 1 ? calculateBearing(route[0], route[1]) : 0,
-      };
-    });
+    return this.routes.map((route, index) => ({
+      id: `ship-${index + 1}`,
+      route,
+      currentWaypoint: 0,
+      latitude: route[0][0], 
+      longitude: route[0][1], 
+      speedOverGround: (Math.random() * 10 + 5).toFixed(2), // Add random speed
+    }));
   }
+  
 
   startSimulation() {
     if (this.interval) return; // Prevent multiple intervals
@@ -74,6 +67,12 @@ export class AISSimulator {
     }, this.intervalMs);
   }
 
+  resetSimulation() {
+    this.stopSimulation();
+    this.ships = this.generateShips();
+    this.updateCallback([...this.ships]);
+  }
+  
   stopSimulation() {
     if (this.interval) {
       clearInterval(this.interval);
@@ -81,3 +80,4 @@ export class AISSimulator {
     }
   }
 }
+

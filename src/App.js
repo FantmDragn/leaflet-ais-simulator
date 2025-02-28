@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { AISSimulator } from "./simulator/AISSimulator";
 import Controls from "./components/Controls"; // Import the controls
+import { generateDetailedRoute } from "./utils/routeUtils"; // Import route generator
 
 const mapStyle = { height: "90vh", width: "100%" };
 
@@ -25,8 +26,14 @@ const App = () => {
   const [isRunning, setIsRunning] = useState(false);
 
   useEffect(() => {
-    const aisSim = new AISSimulator(routes, setShips);
+    // Convert sparse waypoints into detailed waypoints (~15m apart)
+    const detailedRoutes = routes.map(route => generateDetailedRoute(route, 15, 2000));
+  
+    console.log("🚀 Expanded Routes:", detailedRoutes);
+  
+    const aisSim = new AISSimulator(detailedRoutes, setShips);
     setSimulator(aisSim);
+  
     return () => aisSim.stopSimulation(); // Cleanup on unmount
   }, []);
 
@@ -66,21 +73,23 @@ const App = () => {
           attribution='&copy; OpenStreetMap contributors'
         />
 
-        {ships.map((ship) => (
-          <CircleMarker
-            key={ship.id}
-            center={[ship.latitude, ship.longitude]}
-            radius={6}
-            color="white"
-            fillColor="white"
-            fillOpacity={1}
-            weight={2}
-          >
-            <Popup>
-              <b>🚢 Simulated Ship {ship.id}</b><br />
-              <b>Speed:</b> {ship.speedOverGround} knots
-            </Popup>
-          </CircleMarker>
+          {ships
+          .filter((ship) => ship.latitude !== undefined && ship.longitude !== undefined)
+          .map((ship) => (
+            <CircleMarker
+              key={ship.id}
+              center={[ship.latitude, ship.longitude]}
+              radius={6}
+              color="white"
+              fillColor="white"
+              fillOpacity={1}
+              weight={2}
+            >
+              <Popup>
+                <b>🚢 Simulated Ship {ship.id}</b><br />
+                <b>Speed:</b> {ship.speedOverGround} knots
+              </Popup>
+            </CircleMarker>
         ))}
       </MapContainer>
     </div>
