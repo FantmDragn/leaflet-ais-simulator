@@ -58,3 +58,22 @@ export default function MapComponent() {
     </MapContainer>
   );
 }
+{ships.map((ship) => {
+  console.log(`Ship ${ship.id}:`, ship.latitude, ship.longitude); // Debugging
+
+  return (
+    <Marker
+      key={ship.id}
+      position={
+        ship.latitude !== undefined && ship.longitude !== undefined
+          ? [ship.latitude, ship.longitude]
+          : [0, 0] // Default position to avoid crashes
+      }
+    >
+      <Popup>
+        <strong>Ship ID:</strong> {ship.id} <br />
+        <strong>Heading:</strong> {ship.heading ? ship.heading.toFixed(1) : "Unknown"}°
+      </Popup>
+    </Marker>
+  );
+})}
