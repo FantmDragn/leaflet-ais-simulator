@@ -1,5 +1,7 @@
+import { calculateBearing } from "../utils/routeUtils";
+
 export class AISSimulator {
-  constructor(routes, updateCallback, intervalMs = 5000) {
+  constructor(routes, updateCallback, intervalMs = 2000) {
     this.routes = routes;
     this.updateCallback = updateCallback;
     this.intervalMs = intervalMs;
@@ -12,9 +14,9 @@ export class AISSimulator {
       id: `ship-${index + 1}`,
       route,
       currentWaypoint: 0,
-      latitude: route[0].lat,
-      longitude: route[0].lon,
-      speedOverGround: (Math.random() * 10 + 5).toFixed(2),
+      latitude: route[0][0],
+      longitude: route[0][1],
+      heading: route.length > 1 ? calculateBearing(route[0], route[1]) : 0, // Initial heading
     }));
   }
 
@@ -24,13 +26,19 @@ export class AISSimulator {
       this.ships = this.ships.map((ship) => {
         let nextWaypoint = ship.currentWaypoint + 1;
         if (nextWaypoint >= ship.route.length) {
-          nextWaypoint = 0;
+          nextWaypoint = 0; // Loop back to start
         }
+
+        const newLat = ship.route[nextWaypoint][0];
+        const newLon = ship.route[nextWaypoint][1];
+        const heading = calculateBearing([ship.latitude, ship.longitude], [newLat, newLon]);
+
         return {
           ...ship,
           currentWaypoint: nextWaypoint,
-          latitude: ship.route[nextWaypoint].lat,
-          longitude: ship.route[nextWaypoint].lon,
+          latitude: newLat,
+          longitude: newLon,
+          heading,
         };
       });
 
