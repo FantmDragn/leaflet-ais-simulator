@@ -14,8 +14,8 @@ export class AISSimulator {
       id: `ship-${index + 1}`,
       route,
       currentWaypoint: 0,
-      latitude: route[0][0], 
-      longitude: route[0][1], 
+      latitude: route.length > 0 ? route[0][0] : 0, 
+      longitude: route.length > 0 ? route[0][1] : 0, 
       speedOverGround: (Math.random() * 10 + 5).toFixed(2), // Add random speed
     }));
   }
