@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import { AISSimulator } from "./simulator/AISSimulator";
+import Controls from "./components/Controls"; // Import the controls
 
-const mapStyle = { height: "100vh", width: "100%" };
+const mapStyle = { height: "90vh", width: "100%" };
 
-
-// Predefined ship routes
 const routes = [
   [
     { lat: 37.7749, lon: -122.4194 }, // San Francisco
@@ -19,72 +19,72 @@ const routes = [
   ],
 ];
 
-// Function to initialize ships on their routes
-const generateShips = () => {
-  return routes.map((route, index) => ({
-    id: `ship-${index + 1}`,
-    route,
-    currentWaypoint: 0, // Start at the first waypoint
-    latitude: route[0].lat,
-    longitude: route[0].lon,
-    speedOverGround: (Math.random() * 10 + 5).toFixed(2), // Random speed 5-15 knots
-  }));
-};
-
-const Map = () => {
-  const [ships, setShips] = useState(generateShips());
+const App = () => {
+  const [ships, setShips] = useState([]);
+  const [simulator, setSimulator] = useState(null);
+  const [isRunning, setIsRunning] = useState(false);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setShips((prevShips) =>
-        prevShips.map((ship) => {
-          let nextWaypoint = ship.currentWaypoint + 1;
-          if (nextWaypoint >= ship.route.length) {
-            nextWaypoint = 0; // Loop back to start
-          }
-
-          return {
-            ...ship,
-            currentWaypoint: nextWaypoint,
-            latitude: ship.route[nextWaypoint].lat,
-            longitude: ship.route[nextWaypoint].lon,
-          };
-        })
-      );
-    }, 5000); // Move every 5 seconds
-
-    return () => clearInterval(interval);
+    const aisSim = new AISSimulator(routes, setShips);
+    setSimulator(aisSim);
+    return () => aisSim.stopSimulation(); // Cleanup on unmount
   }, []);
 
+  const startSimulation = () => {
+    if (simulator && !isRunning) {
+      simulator.startSimulation();
+      setIsRunning(true);
+    }
+  };
+
+  const stopSimulation = () => {
+    if (simulator && isRunning) {
+      simulator.stopSimulation();
+      setIsRunning(false);
+    }
+  };
+
+  const resetSimulation = () => {
+    if (simulator) {
+      simulator.resetSimulation();
+      setIsRunning(false);
+    }
+  };
+
   return (
-    <MapContainer center={[37, -95]} zoom={4} style={mapStyle}>
-      <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    <div>
+      <Controls 
+        onStart={startSimulation} 
+        onStop={stopSimulation} 
+        onReset={resetSimulation} 
+        isRunning={isRunning} 
       />
 
-      {/* Simulated Ships Following Routes */}
-      {ships.map((ship) => (
-        <CircleMarker
-          key={ship.id}
-          center={[ship.latitude, ship.longitude]}
-          radius={6} // Increase size for visibility
-          stroke={true}
-          color="white" // Ensure outline is white
-          fillColor="white" // Ensure fill is white
-          fillOpacity={1} // Make fully visible
-          weight={2} // Thicker outline for visibility
-        >
-          <Popup>
-            <b>🚢 Simulated Ship {ship.id}</b><br />
-            <b>Speed:</b> {ship.speedOverGround} knots
-          </Popup>
-      </CircleMarker>
-      
-      ))}
+      <MapContainer center={[37, -95]} zoom={4} style={mapStyle}>
+        <TileLayer
+          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          attribution='&copy; OpenStreetMap contributors'
+        />
 
-    </MapContainer>
+        {ships.map((ship) => (
+          <CircleMarker
+            key={ship.id}
+            center={[ship.latitude, ship.longitude]}
+            radius={6}
+            color="white"
+            fillColor="white"
+            fillOpacity={1}
+            weight={2}
+          >
+            <Popup>
+              <b>🚢 Simulated Ship {ship.id}</b><br />
+              <b>Speed:</b> {ship.speedOverGround} knots
+            </Popup>
+          </CircleMarker>
+        ))}
+      </MapContainer>
+    </div>
   );
 };
 
-export default Map;
+export default App;
