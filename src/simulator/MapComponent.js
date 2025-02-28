@@ -26,17 +26,19 @@ export default function MapComponent() {
   const [detailedRoutes, setDetailedRoutes] = useState([]); // Store interpolated routes
 
   useEffect(() => {
-    // Generate detailed routes (~15m spaced waypoints)
-    const interpolatedRoutes = initialRoutes.map(route => generateDetailedRoute(route, 15, 2000));
-    setDetailedRoutes(interpolatedRoutes); // Store the detailed routes
-
-    // Initialize the AIS Simulator with detailed routes
-    const aisSim = new AISSimulator(interpolatedRoutes, setShips, 2000);
+    const detailedRoutes = initialRoutes.map(route => generateDetailedRoute(route, 15, 2000));
+  
+    console.log("🚀 Expanded Routes:", detailedRoutes);
+  
+    setDetailedRoutes(detailedRoutes);
+  
+    const aisSim = new AISSimulator(detailedRoutes, setShips, 2000);
     aisSim.startSimulation();
     setSimulator(aisSim);
-
+  
     return () => aisSim.stopSimulation();
   }, []);
+  
 
   return (
     <MapContainer center={[51.505, -0.09]} zoom={7} style={{ height: "100vh", width: "100%" }}>
