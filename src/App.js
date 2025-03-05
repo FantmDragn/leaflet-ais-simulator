@@ -37,7 +37,7 @@ const App = () => {
     const aisSim = new AISSimulator(detailedRoutes, setShips);
     setSimulator(aisSim);
 
-    return () => aisSim.stopSimulation();
+   //  return () => aisSim.stopSimulation();
   }, []);
 
   const startSimulation = () => {
