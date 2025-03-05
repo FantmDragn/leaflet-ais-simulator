@@ -6,6 +6,8 @@ import AircraftSimulator from "./simulator/AircraftSimulator";
 import { generateDetailedRoute, generateRandomRoutes } from "./utils/routeUtils";
 
 const mapStyle = { height: "100vh", width: "100vw" };
+const shipTypes = ["Container", "Tanker", "Cargo", "Passenger"];
+const countryFlags = { USA: "🇺🇸", UK: "🇬🇧", China: "🇨🇳", Germany: "🇩🇪", Japan: "🇯🇵" };
 
 // 🌊 Base routes - Move ships FARTHER offshore
 const baseRoutes = [
@@ -38,7 +40,19 @@ const App = () => {
     const detailedRoutes = routes.map(route => generateDetailedRoute(route, 15, 2000));
     console.log(`🚢 Generated ${detailedRoutes.length} ship routes`);
 
-    const aisSim = new AISSimulator(detailedRoutes, setShips);
+    const aisSim = new AISSimulator(detailedRoutes, (updatedShips) => {
+      setShips(updatedShips.map((ship, index) => {
+        if (index % 2 === 0) { // Assign additional data to half of the ships
+          return {
+            ...ship,
+            heading: Math.floor(Math.random() * 360),
+            type: shipTypes[Math.floor(Math.random() * shipTypes.length)],
+            country: Object.keys(countryFlags)[Math.floor(Math.random() * Object.keys(countryFlags).length)],
+          };
+        }
+        return ship;
+      }));
+    });
     setSimulator(aisSim);
   }, []);
 
@@ -95,7 +109,14 @@ const App = () => {
             >
               <Popup>
                 <b>🚢 Simulated Ship {ship.id}</b><br />
-                <b>Speed:</b> {ship.speedOverGround} knots
+                <b>Speed:</b> {ship.speedOverGround} knots<br />
+                {ship.heading !== undefined && <><b>Heading:</b> {ship.heading}°<br /></>}
+                {ship.type && ship.country && (
+                  <>
+                    <b>Type:</b> {ship.type}<br />
+                    <b>Flag:</b> {countryFlags[ship.country]} {ship.country}
+                  </>
+                )}
               </Popup>
             </CircleMarker>
         ))}
