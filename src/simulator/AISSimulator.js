@@ -10,14 +10,17 @@ export class AISSimulator {
   }
 
   generateShips() {
-    return this.routes.map((route, index) => ({
-      id: `ship-${index + 1}`,
-      route,
-      currentWaypoint: 0,
-      latitude: route[0][0], 
-      longitude: route[0][1], 
-      speedOverGround: (Math.random() * 10 + 5).toFixed(2), // Add random speed
-    }));
+    return this.routes.flatMap((route, index) => {
+      const numberOfShips = Math.random() * 3 + 2; // Increase ships per route
+      return Array.from({ length: numberOfShips }, (_, i) => ({
+        id: `ship-${index + 1}-${i + 1}`,
+        route,
+        currentWaypoint: Math.floor(Math.random() * route.length), // Random starting point
+        latitude: route[0][0],
+        longitude: route[0][1],
+        speedOverGround: (Math.random() * 10 + 5).toFixed(2), // Random speed
+      }));
+    });
   }
   
   startSimulation() {
