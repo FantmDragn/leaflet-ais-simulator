@@ -1,24 +1,26 @@
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, CircleMarker, Polyline, Popup } from "react-leaflet";
-import { AISSimulator } from "../simulator/AISSimulator";
-import AircraftSimulator from "../simulator/AircraftSimulator"; 
-import { generateDetailedRoute, generateRandomRoutes } from "../utils/routeUtils";
+import { AISSimulator } from "./simulator/AISSimulator"; // ✅ Correct path
+import AircraftSimulator from "./simulator/AircraftSimulator"; // ✅ Fixed import
+import { generateDetailedRoute, generateRandomRoutes } from "./utils/routeUtils";
 import "leaflet/dist/leaflet.css";
 
 const mapStyle = { height: "100vh", width: "100vw" };
 const shipTypes = ["Container", "Tanker", "Cargo", "Passenger"];
 const countryFlags = { USA: "🇺🇸", UK: "🇬🇧", China: "🇨🇳", Germany: "🇩🇪", Japan: "🇯🇵" };
 
+// 🌊 Base ship routes
 const baseRoutes = [
   [{ lat: 36.7749, lon: -127.4194 }, { lat: 35.8508, lon: -126.5000 }, { lat: 33.0522, lon: -123.2437 }],
   [{ lat: 39.7128, lon: -130.0060 }, { lat: 38.2904, lon: -128.6122 }, { lat: 37.9072, lon: -127.0369 }],
 ];
 
-const routes = generateRandomRoutes(baseRoutes, 5); // 🚢 Create 5x more ships
+const routes = generateRandomRoutes(baseRoutes, 5); // 🚢 Creates 5x more ships
 
 export default function MapComponent() {
   const [ships, setShips] = useState([]);
-  const [mapTheme, setMapTheme] = useState("dark");
+  const [simulator, setSimulator] = useState(null);
+  const [mapTheme, setMapTheme] = useState("dark"); // ✅ Map theme toggle state
 
   useEffect(() => {
     const detailedRoutes = routes.map(route => generateDetailedRoute(route, 15, 2000));
@@ -33,6 +35,8 @@ export default function MapComponent() {
         country: Object.keys(countryFlags)[index % Object.keys(countryFlags).length],
       })));
     });
+
+    setSimulator(aisSim);
   }, []);
 
   const toggleMapTheme = () => {
@@ -41,6 +45,7 @@ export default function MapComponent() {
 
   return (
     <div>
+      {/* Toggle Theme Button */}
       <button 
         onClick={toggleMapTheme} 
         style={{ position: "absolute", top: "10px", right: "10px", zIndex: 1000, padding: "8px",
@@ -48,6 +53,7 @@ export default function MapComponent() {
         🌍
       </button>
 
+      {/* 🚢 MAP CONTAINER */}
       <MapContainer center={[30, -90]} zoom={3} style={mapStyle}>
         <TileLayer
           url={mapTheme === "dark"
