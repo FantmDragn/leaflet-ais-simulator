@@ -2,11 +2,10 @@ import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { AISSimulator } from "./simulator/AISSimulator";
-import AircraftSimulator from "./simulator/AircraftSimulator"; // ✅ Correct
-import { generateDetailedRoute, generateRandomRoutes } from "./utils/routeUtils"; // ✅ Import route functions
+import AircraftSimulator from "./simulator/AircraftSimulator";
+import { generateDetailedRoute, generateRandomRoutes } from "./utils/routeUtils";
 
-
-const mapStyle = { height: "100vh", width: "100%" };
+const mapStyle = { height: "100vh", width: "100vw" };
 
 // 🌊 Base routes - Move ships FARTHER offshore
 const baseRoutes = [
@@ -28,7 +27,7 @@ const routes = generateRandomRoutes(baseRoutes, 5); // 🚢 Create 5x more ships
 const App = () => {
   const [ships, setShips] = useState([]);
   const [simulator, setSimulator] = useState(null);
-  const [isRunning, setIsRunning] = useState(false);
+  const [mapTheme, setMapTheme] = useState("dark"); // Toggle between dark and light maps
 
   useEffect(() => {
     const detailedRoutes = routes.map(route => generateDetailedRoute(route, 15, 2000));
@@ -36,32 +35,42 @@ const App = () => {
 
     const aisSim = new AISSimulator(detailedRoutes, setShips);
     setSimulator(aisSim);
-
-   //  return () => aisSim.stopSimulation();
   }, []);
 
-  const startSimulation = () => {
-    if (simulator && !isRunning) {
-      simulator.startSimulation();
-      setIsRunning(true);
-    }
-  };
-
-  const stopSimulation = () => {
-    if (simulator && isRunning) {
-      simulator.stopSimulation();
-      setIsRunning(false);
-    }
+  const toggleMapTheme = () => {
+    setMapTheme(mapTheme === "dark" ? "light" : "dark");
   };
 
   return (
     <div>
-      <MapContainer center={[30, -90]} zoom={3} style={mapStyle}> {/* ✅ Adjusted to show full ocean */}
+      {/* Button to toggle map theme */}
+      <button 
+        onClick={toggleMapTheme} 
+        style={{ 
+          position: "absolute", 
+          top: "10px", 
+          right: "10px", 
+          zIndex: 1000, 
+          padding: "8px 12px", 
+          background: "white", 
+          border: "1px solid #ccc", 
+          cursor: "pointer" 
+        }}
+      >
+        Toggle Map Theme
+      </button>
+
+      <MapContainer center={[30, -90]} zoom={3} style={mapStyle}> {/* ✅ Full-screen map */}
         <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          url={
+            mapTheme === "dark"
+              ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+              : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          }
           attribution='&copy; OpenStreetMap contributors'
         />
-  {/* 🚢 Render Ships */}
+
+        {/* 🚢 Render Ships */}
         {ships
           .filter((ship) => ship.latitude !== undefined && ship.longitude !== undefined)
           .map((ship) => (
@@ -80,8 +89,9 @@ const App = () => {
               </Popup>
             </CircleMarker>
         ))}
-{/* ✈️ ✅ Add Aircraft Simulation */}
-  <AircraftSimulator /> 
+
+        {/* ✈️ ✅ Add Aircraft Simulation */}
+        <AircraftSimulator />
       </MapContainer>
     </div>
   );
