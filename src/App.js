@@ -42,15 +42,12 @@ const App = () => {
 
     const aisSim = new AISSimulator(detailedRoutes, (updatedShips) => {
       setShips(updatedShips.map((ship, index) => {
-        if (index % 2 === 0) { // Assign additional data to half of the ships
-          return {
-            ...ship,
-            heading: Math.floor(Math.random() * 360),
-            type: shipTypes[Math.floor(Math.random() * shipTypes.length)],
-            country: Object.keys(countryFlags)[Math.floor(Math.random() * Object.keys(countryFlags).length)],
-          };
-        }
-        return ship;
+        return {
+          ...ship,
+          heading: ship.heading || Math.floor(Math.random() * 360), // Ensure heading is set
+          type: index % 2 === 0 ? shipTypes[index % shipTypes.length] : undefined,
+          country: index % 2 === 0 ? Object.keys(countryFlags)[index % Object.keys(countryFlags).length] : undefined,
+        };
       }));
     });
     setSimulator(aisSim);
@@ -110,7 +107,7 @@ const App = () => {
               <Popup>
                 <b>🚢 Simulated Ship {ship.id}</b><br />
                 <b>Speed:</b> {ship.speedOverGround} knots<br />
-                {ship.heading !== undefined && <><b>Heading:</b> {ship.heading}°<br /></>}
+                <b>Heading:</b> {ship.heading}°<br />
                 {ship.type && ship.country && (
                   <>
                     <b>Type:</b> {ship.type}<br />
