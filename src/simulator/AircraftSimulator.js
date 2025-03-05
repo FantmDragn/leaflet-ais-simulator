@@ -21,8 +21,8 @@ const aircraftIcon = L.divIcon({
 
 const helicopterIcon = L.divIcon({
   className: "helicopter-icon",
-  html: "<div style='color: white; font-size: 16px; text-align: center;'>△⃝✖</div>", // Triangle with circle around and X
-  iconSize: [25, 25],
+  html: "<div style='color: white; font-size: 14px; text-align: center;'>🚁</div>", // Improved helicopter icon
+  iconSize: [22, 22],
 });
 
 // Define flight routes between airports
@@ -50,7 +50,7 @@ const AircraftSimulator = () => {
       return flightRoutes.map((route) => ({
         position: { lat: route.from[0], lng: route.from[1] }, // Convert array to object
         destination: { lat: route.to[0], lng: route.to[1] }, // Convert array to object
-        speed: Math.random() * 0.002 + 0.002, // ✅ Slower random speed factor
+        speed: Math.random() * 0.0005 + 0.0003, // ✅ More realistic aircraft speed
         altitude: Math.random() * 30000 + 10000, // Random altitude between 10k-40k ft
       }));
     };
@@ -63,7 +63,7 @@ const AircraftSimulator = () => {
         loops: route.loops,
         angle: 0, // Start angle for movement
         position: { lat: route.center.lat, lng: route.center.lng }, // Start at center
-        speed: 0.0005, // ✅ Slower helicopter speed
+        speed: 0.0002, // ✅ More realistic helicopter speed
       }));
     };
 
@@ -94,7 +94,7 @@ const AircraftSimulator = () => {
 
       setHelicopters((prevHelicopters) =>
         prevHelicopters.map((heli) => {
-          const newAngle = heli.angle + (360 / heli.loops) * 0.005; // ✅ Slower rotation
+          const newAngle = heli.angle + (360 / heli.loops) * 0.002; // ✅ Slower rotation
           const newLat = heli.center.lat + heli.radius * Math.cos(newAngle);
           const newLng = heli.center.lng + heli.radius * Math.sin(newAngle);
           return { ...heli, angle: newAngle, position: { lat: newLat, lng: newLng } };
