@@ -97,11 +97,11 @@ const App = () => {
             <CircleMarker
               key={ship.id}
               center={[ship.latitude, ship.longitude]}
-              radius={3}  // ✅ Smaller dots
+              radius={4}  // ✅ Smaller dots
               color="black"  // ✅ Black outline
               fillColor="white"
               fillOpacity={1}
-              weight={2}  // ✅ Outline thickness
+              weight={1}  // ✅ Outline thickness
               stroke={true}
             >
               <Popup>
