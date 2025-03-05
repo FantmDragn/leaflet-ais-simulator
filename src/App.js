@@ -122,6 +122,17 @@ const App = () => {
                       </>
                     )}
                   </Popup>
+                  center={[unknownShip.latitude, unknownShip.longitude]}
+                  radius={5}  // ✅ Slightly larger to differentiate
+                  color="black"  // ✅ Black outline
+                  fillColor="yellow"  // ✅ Unknown ship in yellow
+                  fillOpacity={1}
+                  weight={2}
+                  stroke={true}
+                  <Popup>
+                    <b>🚢 Unknown Ship</b><br />
+                    <b>Speed:</b> {unknownShip.speedOverGround} knots
+                  </Popup>
                 </CircleMarker>
                 
                 <Polyline
