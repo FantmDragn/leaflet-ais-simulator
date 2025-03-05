@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 
-// Define airport locations
+// Define airport locations as coordinate arrays
 const airports = {
   SEA: [47.4489, -122.3094],
   LAX: [33.9416, -118.4085],
@@ -12,7 +12,7 @@ const airports = {
   SFO: [37.6213, -122.379],
 };
 
-// Aircraft icons
+// Define icons for aircraft and helicopters
 const aircraftIcon = L.divIcon({
   className: "aircraft-icon",
   html: "▲",
@@ -25,7 +25,7 @@ const helicopterIcon = L.divIcon({
   iconSize: [20, 20],
 });
 
-// Flight paths with random variations
+// Define flight routes between airports
 const flightRoutes = [
   { from: airports.SEA, to: airports.HNL },
   { from: airports.SEA, to: airports.LAX },
@@ -35,9 +35,9 @@ const flightRoutes = [
   { from: airports.SFO, to: airports.LAX },
 ];
 
-// Helicopter paths around LA
+// Define helicopter paths around LAX
 const helicopterRoutes = [
-  { center: airports.LAX, radius: 0.2, loops: 3 },
+  { center: { lat: airports.LAX[0], lng: airports.LAX[1] }, radius: 0.2, loops: 3 },
 ];
 
 const AircraftSimulator = () => {
@@ -45,27 +45,26 @@ const AircraftSimulator = () => {
   const [helicopters, setHelicopters] = useState([]);
 
   useEffect(() => {
-    // Generate initial aircraft and helicopters
+    // Generate initial flights with structured position and destination objects
     const generateFlights = () => {
-      const flights = flightRoutes.map((route) => ({
-        position: { lat: route.from[0], lng: route.from[1] }, // ✅ Convert to object
-        destination: { lat: route.to[0], lng: route.to[1] }, // ✅ Convert to object
-        speed: Math.random() * 0.01 + 0.01,
-        altitude: Math.random() * 30000 + 10000,
+      return flightRoutes.map((route) => ({
+        position: { lat: route.from[0], lng: route.from[1] }, // Convert array to object
+        destination: { lat: route.to[0], lng: route.to[1] }, // Convert array to object
+        speed: Math.random() * 0.01 + 0.01, // Random speed factor
+        altitude: Math.random() * 30000 + 10000, // Random altitude between 10k-40k ft
       }));
-    console.log("✈️ Generated flights:", flights); // ✅ Log aircraft generation
-    return flights;     
     };
 
+    // Generate initial helicopter routes
     const generateHelicopters = () => {
       return helicopterRoutes.map((route) => ({
         center: route.center,
         radius: route.radius,
         loops: route.loops,
-        angle: 0,
+        angle: 0, // Start angle for movement
+        position: { lat: route.center.lat, lng: route.center.lng }, // Start at center
       }));
     };
-
 
     setAircraft(generateFlights());
     setHelicopters(generateHelicopters());
@@ -75,13 +74,18 @@ const AircraftSimulator = () => {
     const interval = setInterval(() => {
       setAircraft((prevAircraft) =>
         prevAircraft.map((plane) => {
+          if (!plane.position || !plane.destination) {
+            console.error("❌ Missing position data for aircraft:", plane);
+            return plane;
+          }
+
           const deltaLat = (plane.destination.lat - plane.position.lat) * plane.speed;
           const deltaLng = (plane.destination.lng - plane.position.lng) * plane.speed;
-          const newPosition = { 
-            lat: plane.position.lat + deltaLat, 
-            lng: plane.position.lng + deltaLng 
+
+          const newPosition = {
+            lat: plane.position.lat + deltaLat,
+            lng: plane.position.lng + deltaLng,
           };
-          
 
           return { ...plane, position: newPosition };
         })
@@ -90,32 +94,38 @@ const AircraftSimulator = () => {
       setHelicopters((prevHelicopters) =>
         prevHelicopters.map((heli) => {
           const newAngle = heli.angle + (360 / heli.loops) * 0.02;
-          const newLat = heli.center[0] + heli.radius * Math.cos(newAngle);
-          const newLng = heli.center[1] + heli.radius * Math.sin(newAngle);
-          return { ...heli, angle: newAngle, position: [newLat, newLng] };
+          const newLat = heli.center.lat + heli.radius * Math.cos(newAngle);
+          const newLng = heli.center.lng + heli.radius * Math.sin(newAngle);
+          return { ...heli, angle: newAngle, position: { lat: newLat, lng: newLng } };
         })
       );
     }, 1000);
 
-    return () => clearInterval(interval); // ✅ Cleanup interval
+    return () => clearInterval(interval);
   }, []);
 
   return (
     <>
-      {aircraft.map((plane, index) => (
-        <Marker key={index} position={plane.position} icon={aircraftIcon}>
-          <Popup>
-            <strong>Altitude:</strong> {plane.altitude} ft <br />
-            <strong>Speed:</strong> {plane.speed.toFixed(2)} knots
-          </Popup>
-        </Marker>
-      ))}
+      {/* Render aircraft only if they have valid lat/lng positions */}
+      {aircraft
+        .filter((plane) => plane.position && plane.position.lat !== undefined && plane.position.lng !== undefined)
+        .map((plane, index) => (
+          <Marker key={index} position={plane.position} icon={aircraftIcon}>
+            <Popup>
+              <strong>Altitude:</strong> {plane.altitude} ft <br />
+              <strong>Speed:</strong> {plane.speed.toFixed(2)} knots
+            </Popup>
+          </Marker>
+        ))}
 
-      {helicopters.map((heli, index) => (
-        <Marker key={index} position={heli.position} icon={helicopterIcon}>
-          <Popup>🚁 Helicopter</Popup>
-        </Marker>
-      ))}
+      {/* Render helicopters only if they have valid lat/lng positions */}
+      {helicopters
+        .filter((heli) => heli.position && heli.position.lat !== undefined && heli.position.lng !== undefined)
+        .map((heli, index) => (
+          <Marker key={index} position={heli.position} icon={helicopterIcon}>
+            <Popup>🚁 Helicopter</Popup>
+          </Marker>
+        ))}
     </>
   );
 };
