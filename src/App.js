@@ -6,7 +6,7 @@ import AircraftSimulator from "./simulator/AircraftSimulator"; // ✅ Correct
 import { generateDetailedRoute, generateRandomRoutes } from "./utils/routeUtils"; // ✅ Import route functions
 
 
-const mapStyle = { height: "90vh", width: "100%" };
+const mapStyle = { height: "100%", width: "100%" };
 
 // 🌊 Base routes - Move ships FARTHER offshore
 const baseRoutes = [
