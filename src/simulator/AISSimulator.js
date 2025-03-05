@@ -20,7 +20,6 @@ export class AISSimulator {
     }));
   }
   
-
   startSimulation() {
     if (this.interval) return; // Prevent multiple intervals
 
@@ -40,7 +39,7 @@ export class AISSimulator {
 
         let waypoint = ship.route[nextWaypoint];
 
-        // 🚨 FIX: Convert waypoint object `{ lat, lon }` to array `[lat, lon]` if needed
+        // Convert waypoint object `{ lat, lon }` to array `[lat, lon]` if needed
         if (waypoint && typeof waypoint === "object" && waypoint.lat !== undefined && waypoint.lon !== undefined) {
           waypoint = [waypoint.lat, waypoint.lon];
         }
@@ -80,4 +79,3 @@ export class AISSimulator {
     }
   }
 }
-

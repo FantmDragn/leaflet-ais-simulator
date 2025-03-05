@@ -62,21 +62,27 @@ export default function MapComponent() {
   );
 }
 {ships.map((ship) => {
-  console.log(`Ship ${ship.id}:`, ship.latitude, ship.longitude); // Debugging
+  if (ship.latitude === undefined || ship.longitude === undefined) return null;
+
+  const lineLength = 0.01; // Adjust for visibility
+  const toRadians = (deg) => (deg * Math.PI) / 180;
+
+  // Calculate end point for direction line
+  const newLat = ship.latitude + lineLength * Math.cos(toRadians(ship.heading || 0));
+  const newLon = ship.longitude + lineLength * Math.sin(toRadians(ship.heading || 0));
 
   return (
-    <Marker
-      key={ship.id}
-      position={
-        ship.latitude !== undefined && ship.longitude !== undefined
-          ? [ship.latitude, ship.longitude]
-          : [0, 0] // Default position to avoid crashes
-      }
-    >
-      <Popup>
-        <strong>Ship ID:</strong> {ship.id} <br />
-        <strong>Heading:</strong> {ship.heading ? ship.heading.toFixed(1) : "Unknown"}°
-      </Popup>
-    </Marker>
+    <>
+      <Marker key={ship.id} position={[ship.latitude, ship.longitude]}>
+        <Popup>
+          <strong>Ship ID:</strong> {ship.id} <br />
+          <strong>Heading:</strong> {ship.heading ? ship.heading.toFixed(1) : "Unknown"}°
+        </Popup>
+      </Marker>
+
+      {/* Direction Indicator Line */}
+      <Polyline positions={[[ship.latitude, ship.longitude], [newLat, newLon]]} color="red" />
+    </>
   );
 })}
+
