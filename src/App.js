@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { AISSimulator } from "./simulator/AISSimulator";
-import { AircraftSimulator } from "./simulator/AircraftSimulator"; // ✅ Import aircraft simulator
+import AircraftSimulator from "./simulator/AircraftSimulator"; // ✅ Correct
 import { generateDetailedRoute, generateRandomRoutes } from "./utils/routeUtils"; // ✅ Import route functions
 import Controls from "./components/Controls"; 
 
