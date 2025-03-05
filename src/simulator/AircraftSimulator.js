@@ -48,10 +48,10 @@ const AircraftSimulator = () => {
     // Generate initial aircraft and helicopters
     const generateFlights = () => {
       const flights = flightRoutes.map((route) => ({
-        position: route.from,
-        destination: route.to,
-        speed: Math.random() * 0.01 + 0.01, // Random speed
-        altitude: Math.random() * 30000 + 10000, // Random altitude
+        position: { lat: route.from[0], lng: route.from[1] }, // ✅ Convert to object
+        destination: { lat: route.to[0], lng: route.to[1] }, // ✅ Convert to object
+        speed: Math.random() * 0.01 + 0.01,
+        altitude: Math.random() * 30000 + 10000,
       }));
     console.log("✈️ Generated flights:", flights); // ✅ Log aircraft generation
     return flights;     
@@ -75,9 +75,13 @@ const AircraftSimulator = () => {
     const interval = setInterval(() => {
       setAircraft((prevAircraft) =>
         prevAircraft.map((plane) => {
-          const deltaLat = (plane.destination[0] - plane.position[0]) * plane.speed;
-          const deltaLng = (plane.destination[1] - plane.position[1]) * plane.speed;
-          const newPosition = [plane.position[0] + deltaLat, plane.position[1] + deltaLng];
+          const deltaLat = (plane.destination.lat - plane.position.lat) * plane.speed;
+          const deltaLng = (plane.destination.lng - plane.position.lng) * plane.speed;
+          const newPosition = { 
+            lat: plane.position.lat + deltaLat, 
+            lng: plane.position.lng + deltaLng 
+          };
+          
 
           return { ...plane, position: newPosition };
         })
