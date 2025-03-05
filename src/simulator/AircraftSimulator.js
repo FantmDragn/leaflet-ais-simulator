@@ -47,7 +47,7 @@ const AircraftSimulator = () => {
   useEffect(() => {
     // Generate initial aircraft and helicopters
     const generateFlights = () => {
-      return flightRoutes.map((route) => ({
+      const flights = flightRoutes.map((route) => ({
         position: route.from,
         destination: route.to,
         speed: Math.random() * 0.01 + 0.01, // Random speed
