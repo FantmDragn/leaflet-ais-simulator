@@ -21,7 +21,20 @@ export class AISSimulator {
         longitude: route[0][1],
         speedOverGround: (Math.random() * 10 + 5).toFixed(2), // Random speed
       }));
-    });
+    }).concat(
+      // Additional ships 50 miles east of the existing ones
+      this.routes.flatMap((route, index) => {
+        const numberOfShips = Math.random() * 2 + 1; // Add extra ships eastward
+        return Array.from({ length: numberOfShips }, (_, i) => ({
+          id: `ship-east-${index + 1}-${i + 1}`,
+          route,
+          currentWaypoint: Math.floor(Math.random() * route.length),
+          latitude: route[0][0],
+          longitude: route[0][1] + 0.7, // Approx. 50 miles east (longitude shift)
+          speedOverGround: (Math.random() * 10 + 5).toFixed(2),
+        }));
+      })
+    );
   }
   
   startSimulation() {
