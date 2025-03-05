@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
 import { AISSimulator } from "../simulator/AISSimulator";
+import { AircraftSimulator  } from "../simulator/AircraftSimulator ";
 import { generateDetailedRoute } from "../utils/routeUtils";
 
 const initialRoutes = [
