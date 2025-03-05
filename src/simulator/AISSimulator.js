@@ -7,6 +7,7 @@ export class AISSimulator {
     this.intervalMs = intervalMs;
     this.ships = this.generateShips();
     this.interval = null;
+    this.startSimulation(); // Automatically start simulation on load
   }
 
   generateShips() {
@@ -70,15 +71,7 @@ export class AISSimulator {
   }
 
   resetSimulation() {
-    this.stopSimulation();
     this.ships = this.generateShips();
     this.updateCallback([...this.ships]);
-  }
-  
-  stopSimulation() {
-    if (this.interval) {
-      clearInterval(this.interval);
-      this.interval = null;
-    }
   }
 }
