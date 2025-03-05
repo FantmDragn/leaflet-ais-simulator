@@ -33,7 +33,8 @@ const App = () => {
   const [unknownShip, setUnknownShip] = useState({
     latitude: 10 + Math.random() * 20, // Random latitude in Pacific
     longitude: -160 + Math.random() * 40, // Random longitude in Pacific
-    speedOverGround: (Math.random() * 5 + 3).toFixed(2), // Random speed
+    speedOverGround: (Math.random() * 10 + 5).toFixed(2), // Random speed between 5-15 knots
+    heading: Math.floor(Math.random() * 360), // Random heading
   });
 
   useEffect(() => {
@@ -44,9 +45,10 @@ const App = () => {
       setShips(updatedShips.map((ship, index) => {
         return {
           ...ship,
-          heading: ship.heading || Math.floor(Math.random() * 360), // Ensure heading is set
-          type: index % 2 === 0 ? shipTypes[index % shipTypes.length] : undefined,
-          country: index % 2 === 0 ? Object.keys(countryFlags)[index % Object.keys(countryFlags).length] : undefined,
+          speedOverGround: (Math.random() * 10 + 5).toFixed(2), // Random speed between 5-15 knots
+          heading: Math.floor(Math.random() * 360), // Random heading
+          type: shipTypes[index % shipTypes.length],
+          country: Object.keys(countryFlags)[index % Object.keys(countryFlags).length],
         };
       }));
     });
@@ -91,10 +93,8 @@ const App = () => {
         />
 
         {/* 🚢 Render Ships with Direction Lines */}
-        {ships
-          .filter((ship) => ship.latitude !== undefined && ship.longitude !== undefined)
-          .map((ship) => {
-            const lineLength = Math.min(0.01 * ship.speedOverGround, 0.1); // Adjust length based on speed, max 0.5
+        {ships.map((ship) => {
+            const lineLength = Math.min(0.01 * ship.speedOverGround, 0.1); // Adjust length based on speed, max 0.1
             const radianHeading = (ship.heading * Math.PI) / 180;
             const endLat = ship.latitude + lineLength * Math.cos(radianHeading);
             const endLng = ship.longitude + lineLength * Math.sin(radianHeading);
@@ -115,27 +115,8 @@ const App = () => {
                     <b>🚢 Simulated Ship {ship.id}</b><br />
                     <b>Speed:</b> {ship.speedOverGround} knots<br />
                     <b>Heading:</b> {ship.heading}°<br />
-                    {ship.type && ship.country && (
-                      <>
-                        <b>Type:</b> {ship.type}<br />
-                        <b>Flag:</b> {countryFlags[ship.country]} {ship.country}
-                      </>
-                    )}
-                  </Popup>
-                </CircleMarker>
-                {/* 🚢 Add Unknown Ship in Pacific */}
-                <CircleMarker
-                  center={[unknownShip.latitude, unknownShip.longitude]}
-                  radius={5}  // ✅ Slightly larger to differentiate
-                  color="black"  // ✅ Black outline
-                  fillColor="yellow"  // ✅ Unknown ship in yellow
-                  fillOpacity={1}
-                  weight={2}
-                  stroke={true}
-                >
-                  <Popup>
-                    <b>🚢 Unknown Ship</b><br />
-                    <b>Speed:</b> {unknownShip.speedOverGround} knots
+                    <b>Type:</b> {ship.type}<br />
+                    <b>Flag:</b> {countryFlags[ship.country]} {ship.country}
                   </Popup>
                 </CircleMarker>
                 
@@ -147,6 +128,23 @@ const App = () => {
               </>
             );
           })}
+
+        {/* 🚢 Add Unknown Ship in Pacific */}
+        <CircleMarker
+          center={[unknownShip.latitude, unknownShip.longitude]}
+          radius={5}
+          color="black"
+          fillColor="yellow"
+          fillOpacity={1}
+          weight={2}
+          stroke={true}
+        >
+          <Popup>
+            <b>🚢 Unknown Ship</b><br />
+            <b>Speed:</b> {unknownShip.speedOverGround} knots<br />
+            <b>Heading:</b> {unknownShip.heading}°
+          </Popup>
+        </CircleMarker>
 
         {/* ✈️ ✅ Add Aircraft Simulation */}
         <AircraftSimulator mapTheme={mapTheme} />
