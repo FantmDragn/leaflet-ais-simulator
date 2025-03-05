@@ -21,7 +21,7 @@ const aircraftIcon = L.divIcon({
 
 const helicopterIcon = L.divIcon({
   className: "helicopter-icon",
-  html: "<div style='color: white; font-size: 16px; text-align: center;'>△⃝</div>", // Triangle with circle around and X
+  html: "<div style='color: white; font-size: 16px; text-align: center;'>△⃝✖</div>", // Triangle with circle around and X
   iconSize: [25, 25],
 });
 
@@ -50,7 +50,7 @@ const AircraftSimulator = () => {
       return flightRoutes.map((route) => ({
         position: { lat: route.from[0], lng: route.from[1] }, // Convert array to object
         destination: { lat: route.to[0], lng: route.to[1] }, // Convert array to object
-        speed: Math.random() * 0.01 + 0.01, // Random speed factor
+        speed: Math.random() * 0.002 + 0.002, // ✅ Slower random speed factor
         altitude: Math.random() * 30000 + 10000, // Random altitude between 10k-40k ft
       }));
     };
@@ -63,6 +63,7 @@ const AircraftSimulator = () => {
         loops: route.loops,
         angle: 0, // Start angle for movement
         position: { lat: route.center.lat, lng: route.center.lng }, // Start at center
+        speed: 0.0005, // ✅ Slower helicopter speed
       }));
     };
 
@@ -93,7 +94,7 @@ const AircraftSimulator = () => {
 
       setHelicopters((prevHelicopters) =>
         prevHelicopters.map((heli) => {
-          const newAngle = heli.angle + (360 / heli.loops) * 0.02;
+          const newAngle = heli.angle + (360 / heli.loops) * 0.005; // ✅ Slower rotation
           const newLat = heli.center.lat + heli.radius * Math.cos(newAngle);
           const newLng = heli.center.lng + heli.radius * Math.sin(newAngle);
           return { ...heli, angle: newAngle, position: { lat: newLat, lng: newLng } };
@@ -113,7 +114,7 @@ const AircraftSimulator = () => {
           <Marker key={index} position={plane.position} icon={aircraftIcon}>
             <Popup>
               <strong>Altitude:</strong> {plane.altitude} ft <br />
-              <strong>Speed:</strong> {plane.speed.toFixed(2)} knots
+              <strong>Speed:</strong> {plane.speed.toFixed(5)} knots
             </Popup>
           </Marker>
         ))}
