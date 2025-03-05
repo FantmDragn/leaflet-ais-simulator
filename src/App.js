@@ -91,7 +91,8 @@ const App = () => {
         ))}
 
         {/* ✈️ ✅ Add Aircraft Simulation */}
-        <AircraftSimulator />
+        <AircraftSimulator mapTheme={mapTheme} />
+
       </MapContainer>
     </div>
   );

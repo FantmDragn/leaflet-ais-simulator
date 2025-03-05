@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Marker, Popup } from "react-leaflet";
+import { Marker, Popup, Polyline } from "react-leaflet";
 import L from "leaflet";
 
 // Define airport locations as coordinate arrays
@@ -40,7 +40,7 @@ const helicopterRoutes = [
   { center: { lat: airports.LAX[0], lng: airports.LAX[1] }, radius: 0.2, loops: 3 },
 ];
 
-const AircraftSimulator = () => {
+const AircraftSimulator = ({ mapTheme }) => {
   const [aircraft, setAircraft] = useState([]);
   const [helicopters, setHelicopters] = useState([]);
 
@@ -107,6 +107,17 @@ const AircraftSimulator = () => {
 
   return (
     <>
+      {/* Render flight paths with black outline if in light mode */}
+      {mapTheme === "light" &&
+        flightRoutes.map((route, index) => (
+          <Polyline
+            key={index}
+            positions={[[route.from[0], route.from[1]], [route.to[0], route.to[1]]]} // Line from start to destination
+            color="black"
+            weight={2}
+          />
+        ))}
+
       {/* Render aircraft only if they have valid lat/lng positions */}
       {aircraft
         .filter((plane) => plane.position && plane.position.lat !== undefined && plane.position.lng !== undefined)
@@ -114,7 +125,7 @@ const AircraftSimulator = () => {
           <Marker key={index} position={plane.position} icon={aircraftIcon}>
             <Popup>
               <strong>Altitude:</strong> {plane.altitude} ft <br />
-              <strong>Speed:</strong> {plane.speed.toFixed(5)} knots
+              <strong>Speed:</strong> {(plane.speed * 3600 * 69).toFixed(2)} MPH
             </Popup>
           </Marker>
         ))}
