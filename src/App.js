@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { AISSimulator } from "./simulator/AISSimulator";
+import { AircraftSimulator } from "./simulator/AircraftSimulator"; // ✅ Import aircraft simulator
 import { generateDetailedRoute, generateRandomRoutes } from "./utils/routeUtils"; // ✅ Import route functions
 import Controls from "./components/Controls"; 
 
@@ -66,7 +67,7 @@ const App = () => {
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
           attribution='&copy; OpenStreetMap contributors'
         />
-
+  {/* 🚢 Render Ships */}
         {ships
           .filter((ship) => ship.latitude !== undefined && ship.longitude !== undefined)
           .map((ship) => (
@@ -85,6 +86,8 @@ const App = () => {
               </Popup>
             </CircleMarker>
         ))}
+{/* ✈️ ✅ Add Aircraft Simulation */}
+  <AircraftSimulator /> 
       </MapContainer>
     </div>
   );
