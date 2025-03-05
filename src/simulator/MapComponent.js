@@ -55,7 +55,7 @@ export default function MapComponent() {
   return (
     <MapContainer center={[51.505, -0.09]} zoom={7} style={{ height: "100vh", width: "100%" }}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-
+{/* Render ships */}
       {ships.map((ship) => (
         <Marker key={ship.id} position={[ship.latitude, ship.longitude]}>
           <Popup>
@@ -71,14 +71,7 @@ export default function MapComponent() {
       ))}
 
       {/* ✅ Render Aircraft Markers */}
-      {aircraft.map((plane, index) => (
-        <Marker key={index} position={plane.position}>
-          <Popup>
-            <strong>Altitude:</strong> {plane.altitude} ft <br />
-            <strong>Speed:</strong> {plane.speed.toFixed(2)} knots
-          </Popup>
-        </Marker>
-      ))}
+      <AircraftSimulator />
     </MapContainer>
   );
 }

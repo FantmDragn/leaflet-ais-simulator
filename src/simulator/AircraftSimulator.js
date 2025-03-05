@@ -53,6 +53,8 @@ const AircraftSimulator = () => {
         speed: Math.random() * 0.01 + 0.01, // Random speed
         altitude: Math.random() * 30000 + 10000, // Random altitude
       }));
+    console.log("✈️ Generated flights:", flights); // ✅ Log aircraft generation
+    return flights;     
     };
 
     const generateHelicopters = () => {
@@ -63,6 +65,7 @@ const AircraftSimulator = () => {
         angle: 0,
       }));
     };
+
 
     setAircraft(generateFlights());
     setHelicopters(generateHelicopters());
