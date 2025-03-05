@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Polyline, Marker, useMap } from "react-leaflet";
+import { Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 
 // Define airport locations
@@ -43,29 +43,25 @@ const helicopterRoutes = [
 const AircraftSimulator = () => {
   const [aircraft, setAircraft] = useState([]);
   const [helicopters, setHelicopters] = useState([]);
-  const map = useMap();
 
   useEffect(() => {
+    // Generate initial aircraft and helicopters
     const generateFlights = () => {
-      return flightRoutes.map((route) => {
-        return {
-          position: route.from,
-          destination: route.to,
-          speed: Math.random() * 0.01 + 0.01, // Random speed
-          altitude: Math.random() * 30000 + 10000, // Random altitude between 10k-40k ft
-        };
-      });
+      return flightRoutes.map((route) => ({
+        position: route.from,
+        destination: route.to,
+        speed: Math.random() * 0.01 + 0.01, // Random speed
+        altitude: Math.random() * 30000 + 10000, // Random altitude
+      }));
     };
 
     const generateHelicopters = () => {
-      return helicopterRoutes.map((route) => {
-        return {
-          center: route.center,
-          radius: route.radius,
-          loops: route.loops,
-          angle: 0,
-        };
-      });
+      return helicopterRoutes.map((route) => ({
+        center: route.center,
+        radius: route.radius,
+        loops: route.loops,
+        angle: 0,
+      }));
     };
 
     setAircraft(generateFlights());
@@ -78,10 +74,9 @@ const AircraftSimulator = () => {
         prevAircraft.map((plane) => {
           const deltaLat = (plane.destination[0] - plane.position[0]) * plane.speed;
           const deltaLng = (plane.destination[1] - plane.position[1]) * plane.speed;
-          return {
-            ...plane,
-            position: [plane.position[0] + deltaLat, plane.position[1] + deltaLng],
-          };
+          const newPosition = [plane.position[0] + deltaLat, plane.position[1] + deltaLng];
+
+          return { ...plane, position: newPosition };
         })
       );
 
@@ -93,30 +88,29 @@ const AircraftSimulator = () => {
           return { ...heli, angle: newAngle, position: [newLat, newLng] };
         })
       );
-    }, 100);
+    }, 1000);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(interval); // ✅ Cleanup interval
   }, []);
 
   return (
     <>
       {aircraft.map((plane, index) => (
-        <Marker key={index} position={plane.position} icon={aircraftIcon} />
+        <Marker key={index} position={plane.position} icon={aircraftIcon}>
+          <Popup>
+            <strong>Altitude:</strong> {plane.altitude} ft <br />
+            <strong>Speed:</strong> {plane.speed.toFixed(2)} knots
+          </Popup>
+        </Marker>
       ))}
+
       {helicopters.map((heli, index) => (
-        <Marker key={index} position={heli.position} icon={helicopterIcon} />
+        <Marker key={index} position={heli.position} icon={helicopterIcon}>
+          <Popup>🚁 Helicopter</Popup>
+        </Marker>
       ))}
     </>
   );
 };
 
-const AircraftMap = () => {
-  return (
-    <MapContainer center={[37.5, -122]} zoom={4} style={{ height: "100vh", width: "100%" }}>
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      <AircraftSimulator />
-    </MapContainer>
-  );
-};
-
-export default AircraftMap;
+export default AircraftSimulator;
