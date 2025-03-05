@@ -28,6 +28,11 @@ const App = () => {
   const [ships, setShips] = useState([]);
   const [simulator, setSimulator] = useState(null);
   const [mapTheme, setMapTheme] = useState("dark"); // Toggle between dark and light maps
+  const [unknownShip, setUnknownShip] = useState({
+    latitude: 10 + Math.random() * 20, // Random latitude in Pacific
+    longitude: -160 + Math.random() * 40, // Random longitude in Pacific
+    speedOverGround: (Math.random() * 5 + 3).toFixed(2), // Random speed
+  });
 
   useEffect(() => {
     const detailedRoutes = routes.map(route => generateDetailedRoute(route, 15, 2000));
@@ -81,12 +86,12 @@ const App = () => {
             <CircleMarker
               key={ship.id}
               center={[ship.latitude, ship.longitude]}
-              radius={4} // ✅ dot size
-              color="black" // ✅ Black outline
+              radius={3}  // ✅ Smaller dots
+              color="black"  // ✅ Black outline
               fillColor="white"
               fillOpacity={1}
-              weight={1} // ✅ Increases outline thickness
-              stroke={true}  // ✅ Ensures the outline is visible
+              weight={2}  // ✅ Outline thickness
+              stroke={true}
             >
               <Popup>
                 <b>🚢 Simulated Ship {ship.id}</b><br />
@@ -94,6 +99,22 @@ const App = () => {
               </Popup>
             </CircleMarker>
         ))}
+
+        {/* 🚢 Add Unknown Ship in Pacific */}
+        <CircleMarker
+          center={[unknownShip.latitude, unknownShip.longitude]}
+          radius={4}  // ✅ Slightly larger to differentiate
+          color="black"  // ✅ Black outline
+          fillColor="yellow"  // ✅ Unknown ship in yellow
+          fillOpacity={1}
+          weight={2}
+          stroke={true}
+        >
+          <Popup>
+            <b>🚢 Unknown Ship</b><br />
+            <b>Speed:</b> {unknownShip.speedOverGround} knots
+          </Popup>
+        </CircleMarker>
 
         {/* ✈️ ✅ Add Aircraft Simulation */}
         <AircraftSimulator mapTheme={mapTheme} />
