@@ -1,77 +1,101 @@
 import { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
+import { MapContainer, TileLayer, CircleMarker, Polyline, Popup } from "react-leaflet";
 import { AISSimulator } from "../simulator/AISSimulator";
-import { AircraftSimulator } from "../simulator/AircraftSimulator"; // ✅ Make sure this is correctly imported
-import { generateDetailedRoute } from "../utils/routeUtils";
+import AircraftSimulator from "../simulator/AircraftSimulator"; 
+import { generateDetailedRoute, generateRandomRoutes } from "../utils/routeUtils";
+import "leaflet/dist/leaflet.css";
 
-const initialRoutes = [
-  [
-    [51.000, -4.000], // Offshore start
-    [51.500, -3.500],
-    [52.000, -3.000],
-    [52.500, -2.500],
-    [53.000, -2.000], // End miles offshore
-  ],
-  [
-    [50.500, -5.000], // Another offshore ship route
-    [51.000, -4.500],
-    [51.500, -4.000],
-    [52.000, -3.500],
-    [52.500, -3.000], // Farther offshore
-  ],
+const mapStyle = { height: "100vh", width: "100vw" };
+const shipTypes = ["Container", "Tanker", "Cargo", "Passenger"];
+const countryFlags = { USA: "🇺🇸", UK: "🇬🇧", China: "🇨🇳", Germany: "🇩🇪", Japan: "🇯🇵" };
+
+const baseRoutes = [
+  [{ lat: 36.7749, lon: -127.4194 }, { lat: 35.8508, lon: -126.5000 }, { lat: 33.0522, lon: -123.2437 }],
+  [{ lat: 39.7128, lon: -130.0060 }, { lat: 38.2904, lon: -128.6122 }, { lat: 37.9072, lon: -127.0369 }],
 ];
+
+const routes = generateRandomRoutes(baseRoutes, 5); // 🚢 Create 5x more ships
 
 export default function MapComponent() {
   const [ships, setShips] = useState([]);
-  const [aircraft, setAircraft] = useState([]); // ✅ Add aircraft state
-  const [simulator, setSimulator] = useState(null);
-  const [detailedRoutes, setDetailedRoutes] = useState([]); // Store interpolated routes
+  const [mapTheme, setMapTheme] = useState("dark");
 
   useEffect(() => {
-    // Generate ship routes
-    const detailedRoutes = initialRoutes.map(route => generateDetailedRoute(route, 15, 2000));
-  
-    console.log("🚀 Expanded Routes:", detailedRoutes);
-  
-    setDetailedRoutes(detailedRoutes);
-  
-    // Start AIS Simulation
-    const aisSim = new AISSimulator(detailedRoutes, setShips, 2000);
-    aisSim.startSimulation();
-    setSimulator(aisSim);
-  
-    return () => aisSim.stopSimulation();
+    const detailedRoutes = routes.map(route => generateDetailedRoute(route, 15, 2000));
+    console.log(`🚢 Generated ${detailedRoutes.length} ship routes`);
+
+    const aisSim = new AISSimulator(detailedRoutes, (updatedShips) => {
+      setShips(updatedShips.map((ship, index) => ({
+        ...ship,
+        speedOverGround: (Math.random() * 10 + 5).toFixed(2),
+        heading: Math.floor(Math.random() * 360),
+        type: shipTypes[index % shipTypes.length],
+        country: Object.keys(countryFlags)[index % Object.keys(countryFlags).length],
+      })));
+    });
   }, []);
 
-  useEffect(() => {
-    // ✅ Start Aircraft Simulation Correctly
-    const aircraftSim = new AircraftSimulator(setAircraft);
-    aircraftSim.startSimulation();
-    setSimulator(aircraftSim);
-
-    return () => aircraftSim.stopSimulation();
-  }, []); // ✅ Ensure it only runs once
+  const toggleMapTheme = () => {
+    setMapTheme(mapTheme === "dark" ? "light" : "dark");
+  };
 
   return (
-    <MapContainer center={[51.505, -0.09]} zoom={7} style={{ height: "100vh", width: "100%" }}>
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-{/* Render ships */}
-      {ships.map((ship) => (
-        <Marker key={ship.id} position={[ship.latitude, ship.longitude]}>
-          <Popup>
-            <strong>Ship ID:</strong> {ship.id} <br />
-            <strong>Heading:</strong> {ship.heading.toFixed(1)}° 
-          </Popup>
-        </Marker>
-      ))}
+    <div>
+      <button 
+        onClick={toggleMapTheme} 
+        style={{ position: "absolute", top: "10px", right: "10px", zIndex: 1000, padding: "8px",
+                 background: "white", border: "1px solid #ccc", borderRadius: "50%", cursor: "pointer" }}>
+        🌍
+      </button>
 
-      {/* Draw ship routes */}
-      {detailedRoutes.map((route, index) => (
-        <Polyline key={index} positions={route} color="blue" />
-      ))}
+      <MapContainer center={[30, -90]} zoom={3} style={mapStyle}>
+        <TileLayer
+          url={mapTheme === "dark"
+            ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"}
+          attribution='&copy; OpenStreetMap contributors'
+        />
 
-      {/* ✅ Render Aircraft Markers */}
-      <AircraftSimulator />
-    </MapContainer>
+        {/* 🚢 Render Ships */}
+        {ships.map((ship) => {
+          const lineLength = Math.min(0.01 * ship.speedOverGround, 0.1);
+          const radianHeading = (ship.heading * Math.PI) / 180;
+          const endLat = ship.latitude + lineLength * Math.cos(radianHeading);
+          const endLng = ship.longitude + lineLength * Math.sin(radianHeading);
+
+          return (
+            <>
+              <CircleMarker
+                key={ship.id}
+                center={[ship.latitude, ship.longitude]}
+                radius={4}
+                color="black"
+                fillColor="white"
+                fillOpacity={1}
+                weight={1}
+                stroke={true}
+              >
+                <Popup>
+                  <b>🚢 Simulated Ship {ship.id}</b><br />
+                  <b>Speed:</b> {ship.speedOverGround} knots<br />
+                  <b>Heading:</b> {ship.heading}°<br />
+                  <b>Type:</b> {ship.type}<br />
+                  <b>Flag:</b> {countryFlags[ship.country]} {ship.country}
+                </Popup>
+              </CircleMarker>
+
+              <Polyline
+                positions={[[ship.latitude, ship.longitude], [endLat, endLng]]}
+                color={mapTheme === "dark" ? "white" : "black"}
+                weight={2}
+              />
+            </>
+          );
+        })}
+
+        {/* ✈️ Aircraft Simulation */}
+        <AircraftSimulator />
+      </MapContainer>
+    </div>
   );
 }

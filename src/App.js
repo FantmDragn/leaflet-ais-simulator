@@ -4,10 +4,20 @@ import "leaflet/dist/leaflet.css";
 import { AISSimulator } from "./simulator/AISSimulator";
 import AircraftSimulator from "./simulator/AircraftSimulator";
 import { generateDetailedRoute, generateRandomRoutes } from "./utils/routeUtils";
+import ChatBox from "./components/ChatBox";
 
 const mapStyle = { height: "100vh", width: "100vw" };
 const shipTypes = ["Container", "Tanker", "Cargo", "Passenger"];
 const countryFlags = { USA: "🇺🇸", UK: "🇬🇧", China: "🇨🇳", Germany: "🇩🇪", Japan: "🇯🇵" };
+
+function App() {
+  return (
+    <div>
+      <MapComponent />  {/* ✅ Loads the map */}
+      <ChatBox />       {/* ✅ Chatbox overlays the map */}
+    </div>
+  );
+}
 
 // 🌊 Base routes - Move ships FARTHER offshore
 const baseRoutes = [
