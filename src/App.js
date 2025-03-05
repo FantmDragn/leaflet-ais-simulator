@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, CircleMarker, Polyline, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { AISSimulator } from "./simulator/AISSimulator";
 import AircraftSimulator from "./simulator/AircraftSimulator";
@@ -90,49 +90,48 @@ const App = () => {
           attribution='&copy; OpenStreetMap contributors'
         />
 
-        {/* 🚢 Render Ships */}
+        {/* 🚢 Render Ships with Direction Lines */}
         {ships
           .filter((ship) => ship.latitude !== undefined && ship.longitude !== undefined)
-          .map((ship) => (
-            <CircleMarker
-              key={ship.id}
-              center={[ship.latitude, ship.longitude]}
-              radius={4}  // ✅ Smaller dots
-              color="black"  // ✅ Black outline
-              fillColor="white"
-              fillOpacity={1}
-              weight={1}  // ✅ Outline thickness
-              stroke={true}
-            >
-              <Popup>
-                <b>🚢 Simulated Ship {ship.id}</b><br />
-                <b>Speed:</b> {ship.speedOverGround} knots<br />
-                <b>Heading:</b> {ship.heading}°<br />
-                {ship.type && ship.country && (
-                  <>
-                    <b>Type:</b> {ship.type}<br />
-                    <b>Flag:</b> {countryFlags[ship.country]} {ship.country}
-                  </>
-                )}
-              </Popup>
-            </CircleMarker>
-        ))}
+          .map((ship) => {
+            const lineLength = Math.min(0.1 * ship.speedOverGround, 0.5); // Adjust length based on speed, max 0.5
+            const radianHeading = (ship.heading * Math.PI) / 180;
+            const endLat = ship.latitude + lineLength * Math.cos(radianHeading);
+            const endLng = ship.longitude + lineLength * Math.sin(radianHeading);
 
-        {/* 🚢 Add Unknown Ship in Pacific */}
-        <CircleMarker
-          center={[unknownShip.latitude, unknownShip.longitude]}
-          radius={4}  // ✅ Slightly larger to differentiate
-          color="black"  // ✅ Black outline
-          fillColor="yellow"  // ✅ Unknown ship in yellow
-          fillOpacity={1}
-          weight={2}
-          stroke={true}
-        >
-          <Popup>
-            <b>🚢 Unknown Ship</b><br />
-            <b>Speed:</b> {unknownShip.speedOverGround} knots
-          </Popup>
-        </CircleMarker>
+            return (
+              <>
+                <CircleMarker
+                  key={ship.id}
+                  center={[ship.latitude, ship.longitude]}
+                  radius={3}  // ✅ Smaller dots
+                  color="black"  // ✅ Black outline
+                  fillColor="white"
+                  fillOpacity={1}
+                  weight={2}  // ✅ Outline thickness
+                  stroke={true}
+                >
+                  <Popup>
+                    <b>🚢 Simulated Ship {ship.id}</b><br />
+                    <b>Speed:</b> {ship.speedOverGround} knots<br />
+                    <b>Heading:</b> {ship.heading}°<br />
+                    {ship.type && ship.country && (
+                      <>
+                        <b>Type:</b> {ship.type}<br />
+                        <b>Flag:</b> {countryFlags[ship.country]} {ship.country}
+                      </>
+                    )}
+                  </Popup>
+                </CircleMarker>
+                
+                <Polyline
+                  positions={[[ship.latitude, ship.longitude], [endLat, endLng]]}
+                  color={mapTheme === "dark" ? "white" : "black"} // ✅ Line color based on theme
+                  weight={2}
+                />
+              </>
+            );
+          })}
 
         {/* ✈️ ✅ Add Aircraft Simulation */}
         <AircraftSimulator mapTheme={mapTheme} />
