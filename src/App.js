@@ -122,6 +122,9 @@ const App = () => {
                       </>
                     )}
                   </Popup>
+                </CircleMarker>
+                {/* 🚢 Add Unknown Ship in Pacific */}
+                <CircleMarker
                   center={[unknownShip.latitude, unknownShip.longitude]}
                   radius={5}  // ✅ Slightly larger to differentiate
                   color="black"  // ✅ Black outline
@@ -129,6 +132,7 @@ const App = () => {
                   fillOpacity={1}
                   weight={2}
                   stroke={true}
+                >
                   <Popup>
                     <b>🚢 Unknown Ship</b><br />
                     <b>Speed:</b> {unknownShip.speedOverGround} knots
