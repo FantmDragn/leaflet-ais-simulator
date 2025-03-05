@@ -93,14 +93,15 @@ const App = () => {
         />
 
         {/* 🚢 Render Ships with Direction Lines */}
-        {ships.map((ship) => {
+        {ships.map((ship, index) => {
             const lineLength = Math.min(0.01 * ship.speedOverGround, 0.1); // Adjust length based on speed, max 0.1
             const radianHeading = (ship.heading * Math.PI) / 180;
             const endLat = ship.latitude + lineLength * Math.cos(radianHeading);
             const endLng = ship.longitude + lineLength * Math.sin(radianHeading);
 
             return (
-              <>
+              
+               <React.Fragment key={ship.id || `ship-${index}`}>
                 <CircleMarker
                   key={ship.id}
                   center={[ship.latitude, ship.longitude]}
@@ -125,7 +126,8 @@ const App = () => {
                   color={mapTheme === "dark" ? "white" : "black"} // ✅ Line color based on theme
                   weight={2}
                 />
-              </>
+                </React.Fragment>
+              
             );
           })}
 
