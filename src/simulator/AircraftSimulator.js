@@ -15,14 +15,14 @@ const airports = {
 // Define icons for aircraft and helicopters
 const aircraftIcon = L.divIcon({
   className: "aircraft-icon",
-  html: "▲",
+  html: "<span style='color: white;'>▲</span>", // White triangle
   iconSize: [20, 20],
 });
 
 const helicopterIcon = L.divIcon({
   className: "helicopter-icon",
-  html: "🚁",
-  iconSize: [20, 20],
+  html: "<div style='color: white; font-size: 16px; text-align: center;'>△⃝</div>", // Triangle with circle around and X
+  iconSize: [25, 25],
 });
 
 // Define flight routes between airports
