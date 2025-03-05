@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Marker, Popup, Polyline } from "react-leaflet";
+import { Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 
 // Define airport locations as coordinate arrays
@@ -12,16 +12,16 @@ const airports = {
   SFO: [37.6213, -122.379],
 };
 
-// Define icons for aircraft and helicopters
-const aircraftIcon = L.divIcon({
+// Define icons for aircraft and helicopters with black outlines for light mode
+const aircraftIcon = (mapTheme) => L.divIcon({
   className: "aircraft-icon",
-  html: "<span style='color: white;'>▲</span>", // White triangle
+  html: `<span style='color: white; -webkit-text-stroke: ${mapTheme === "light" ? "1px black" : "none"};'>▲</span>`,
   iconSize: [20, 20],
 });
 
-const helicopterIcon = L.divIcon({
+const helicopterIcon = (mapTheme) => L.divIcon({
   className: "helicopter-icon",
-  html: "<div style='color: white; font-size: 14px; text-align: center;'>🚁</div>", // Improved helicopter icon
+  html: `<div style='color: white; font-size: 14px; text-align: center; -webkit-text-stroke: ${mapTheme === "light" ? "1px black" : "none"};'>🚁</div>`,
   iconSize: [22, 22],
 });
 
@@ -107,22 +107,11 @@ const AircraftSimulator = ({ mapTheme }) => {
 
   return (
     <>
-      {/* Render flight paths with black outline if in light mode */}
-      {mapTheme === "light" &&
-        flightRoutes.map((route, index) => (
-          <Polyline
-            key={index}
-            positions={[[route.from[0], route.from[1]], [route.to[0], route.to[1]]]} // Line from start to destination
-            color="black"
-            weight={2}
-          />
-        ))}
-
       {/* Render aircraft only if they have valid lat/lng positions */}
       {aircraft
         .filter((plane) => plane.position && plane.position.lat !== undefined && plane.position.lng !== undefined)
         .map((plane, index) => (
-          <Marker key={index} position={plane.position} icon={aircraftIcon}>
+          <Marker key={index} position={plane.position} icon={aircraftIcon(mapTheme)}>
             <Popup>
               <strong>Altitude:</strong> {plane.altitude} ft <br />
               <strong>Speed:</strong> {(plane.speed * 3600 * 69).toFixed(2)} MPH
@@ -134,7 +123,7 @@ const AircraftSimulator = ({ mapTheme }) => {
       {helicopters
         .filter((heli) => heli.position && heli.position.lat !== undefined && heli.position.lng !== undefined)
         .map((heli, index) => (
-          <Marker key={index} position={heli.position} icon={helicopterIcon}>
+          <Marker key={index} position={heli.position} icon={helicopterIcon(mapTheme)}>
             <Popup>🚁 Helicopter</Popup>
           </Marker>
         ))}
