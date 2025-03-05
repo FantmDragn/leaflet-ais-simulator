@@ -43,7 +43,7 @@ const App = () => {
 
   return (
     <div>
-      {/* Button to toggle map theme */}
+      {/* Button to toggle map theme using an icon */}
       <button 
         onClick={toggleMapTheme} 
         style={{ 
@@ -51,13 +51,17 @@ const App = () => {
           top: "10px", 
           right: "10px", 
           zIndex: 1000, 
-          padding: "8px 12px", 
+          padding: "8px", 
           background: "white", 
           border: "1px solid #ccc", 
-          cursor: "pointer" 
+          borderRadius: "50%", 
+          cursor: "pointer", 
+          display: "flex", 
+          alignItems: "center", 
+          justifyContent: "center"
         }}
       >
-        Toggle Map Theme
+        🌍
       </button>
 
       <MapContainer center={[30, -90]} zoom={3} style={mapStyle}> {/* ✅ Full-screen map */}
@@ -92,7 +96,6 @@ const App = () => {
 
         {/* ✈️ ✅ Add Aircraft Simulation */}
         <AircraftSimulator mapTheme={mapTheme} />
-
       </MapContainer>
     </div>
   );
