@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/leaflet-ais-simulator/static/css/main.323d7611.css",
-    "main.js": "/leaflet-ais-simulator/static/js/main.b4e1f120.js",
+    "main.js": "/leaflet-ais-simulator/static/js/main.fb9be4b6.js",
     "static/js/453.e99ca6b4.chunk.js": "/leaflet-ais-simulator/static/js/453.e99ca6b4.chunk.js",
     "index.html": "/leaflet-ais-simulator/index.html",
     "main.323d7611.css.map": "/leaflet-ais-simulator/static/css/main.323d7611.css.map",
-    "main.b4e1f120.js.map": "/leaflet-ais-simulator/static/js/main.b4e1f120.js.map",
+    "main.fb9be4b6.js.map": "/leaflet-ais-simulator/static/js/main.fb9be4b6.js.map",
     "453.e99ca6b4.chunk.js.map": "/leaflet-ais-simulator/static/js/453.e99ca6b4.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.323d7611.css",
-    "static/js/main.b4e1f120.js"
+    "static/js/main.fb9be4b6.js"
   ]
 }
