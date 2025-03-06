@@ -10,7 +10,7 @@ const shipTypes = ["Container", "Tanker", "Cargo", "Passenger"];
 const countryFlags = { USA: "🇺🇸", UK: "🇬🇧", China: "🇨🇳", Germany: "🇩🇪", Japan: "🇯🇵" };
 
 const baseRoutes = [
-  [{ lat: 37.7749, lon: -122.4194 }, { lat: 35.8508, lon: -126.5000 }, { lat: 33.0522, lon: -123.2437 }],
+  [{ lat: 37.7749, lon: -122.4194 }, { lat: 36.7688, lon: -122.2201 }, { lat: 33.0522, lon: -123.2437 }],
   [{ lat: 39.7128, lon: -130.0060 }, { lat: 38.2904, lon: -128.6122 }, { lat: 37.9072, lon: -127.0369 }],
 ];
 
