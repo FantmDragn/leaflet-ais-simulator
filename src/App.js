@@ -12,9 +12,9 @@ const countryFlags = { USA: "🇺🇸", UK: "🇬🇧", China: "🇨🇳", Germa
 // 🌊 Base routes - Move ships FARTHER offshore
 const baseRoutes = [
   [
-    { lat: 36.7749, lon: -127.4194 }, 
-    { lat: 35.8508, lon: -126.5000 }, 
-    { lat: 33.0522, lon: -123.2437 }, 
+    { lat: 37.7749, lon: -124.4194 }, 
+    { lat: 36.7688, lon: -124.2201 }, 
+    { lat: 32.8159, lon: -123.0756 }, 
   ],
   [
     { lat: 39.7128, lon: -130.0060 }, 
@@ -24,7 +24,7 @@ const baseRoutes = [
 ];
 
 // ✅ Generate multiple ships with varied routes
-const routes = generateRandomRoutes(baseRoutes, 5); // 🚢 Create 5x more ships
+const routes = generateRandomRoutes(baseRoutes,7); // 🚢 Create 5x more ships
 
 const App = () => {
   const [ships, setShips] = useState([]);
