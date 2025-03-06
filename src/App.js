@@ -12,7 +12,7 @@ const countryFlags = { USA: "🇺🇸", UK: "🇬🇧", China: "🇨🇳", Germa
 // 🌊 Base routes - Move ships FARTHER offshore
 const baseRoutes = [
   [
-    { lat: 36.7749, lon: -127.4194 }, 
+    { lat: 37.7749, lon: -122.4194 }, 
     { lat: 35.8508, lon: -126.5000 }, 
     { lat: 33.0522, lon: -123.2437 }, 
   ],
