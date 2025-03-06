@@ -38,7 +38,7 @@ const App = () => {
   });
 
   useEffect(() => {
-    const detailedRoutes = routes.map(route => generateDetailedRoute(route, 15, 2000));
+    const detailedRoutes = routes.map(route => generateDetailedRoute(route, 5, 500));
     console.log(`🚢 Generated ${detailedRoutes.length} ship routes`);
 
     const aisSim = new AISSimulator(detailedRoutes, (updatedShips) => {
