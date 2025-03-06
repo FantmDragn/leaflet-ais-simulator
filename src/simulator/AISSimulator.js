@@ -13,45 +13,26 @@ export class AISSimulator {
   generateShips() {
     return this.routes.flatMap((route, index) => {
       const numberOfShips = Math.random() * 3 + 2; // Increase ships per route
-      return Array.from({ length: numberOfShips }, (_, i) => {
-        const startWaypoint = Math.floor(Math.random() * route.length);
-        const [startLat, startLon] = route[startWaypoint];
-
-        // Add random offset to latitude and longitude to spread ships
-        startLat += (Math.random() - 0.5) * 0.5; // Spread ships up to ~50km north/south
-        startLon += (Math.random() - 0.5) * 0.5; // Spread ships up to ~50km east/west
-
-        return {
-          id: `ship-${index + 1}-${i + 1}`,
-          route,
-          currentWaypoint: startWaypoint,
-          latitude: startLat,
-          longitude: startLon,
-          speedOverGround: (Math.random() * 10 + 5).toFixed(2),
-          fixedHeading: Math.random() * 360, // Random heading assigned once per ship
-        };
-      });
+      return Array.from({ length: numberOfShips }, (_, i) => ({
+        id: `ship-${index + 1}-${i + 1}`,
+        route,
+        currentWaypoint: Math.floor(Math.random() * route.length), // Random starting point
+        latitude: route[0][0],
+        longitude: route[0][1],
+        speedOverGround: (Math.random() * 10 + 5).toFixed(2), // Random speed
+      }));
     }).concat(
       // Additional ships 50 miles east of the existing ones
       this.routes.flatMap((route, index) => {
         const numberOfShips = Math.random() * 2 + 1; // Add extra ships eastward
-        return Array.from({ length: numberOfShips }, (_, i) => {
-          const startWaypoint = Math.floor(Math.random() * route.length);
-          const [startLat, startLon] = route[startWaypoint];
-
-          startLat += (Math.random() - 0.5) * 0.3; // Spread slightly
-          startLon += 0.7 + Math.random() * 0.5; // Move eastward, spread even more
-          
-          return {
-            id: `ship-east-${index + 1}-${i + 1}`,
-            route,
-            currentWaypoint: startWaypoint,
-            latitude: startLat,
-            longitude: startLon + 0.7, // Approx. 50 miles east
-            speedOverGround: (Math.random() * 10 + 5).toFixed(2),
-            fixedHeading: Math.random() * 360, // Random heading assigned once per ship
-          };
-        });
+        return Array.from({ length: numberOfShips }, (_, i) => ({
+          id: `ship-east-${index + 1}-${i + 1}`,
+          route,
+          currentWaypoint: Math.floor(Math.random() * route.length),
+          latitude: route[0][0],
+          longitude: route[0][1] + 0.7, // Approx. 50 miles east (longitude shift)
+          speedOverGround: (Math.random() * 10 + 5).toFixed(2),
+        }));
       })
     );
   }
@@ -87,13 +68,14 @@ export class AISSimulator {
         }
 
         const [newLat, newLon] = waypoint;
+        const heading = calculateBearing([ship.latitude, ship.longitude], [newLat, newLon]);
 
         return {
           ...ship,
           currentWaypoint: nextWaypoint,
           latitude: newLat,
           longitude: newLon,
-          heading: ship.fixedHeading, // Keep the fixed heading
+          heading,
         };
       });
 

@@ -12,19 +12,19 @@ const countryFlags = { USA: "🇺🇸", UK: "🇬🇧", China: "🇨🇳", Germa
 // 🌊 Base routes - Move ships FARTHER offshore
 const baseRoutes = [
   [
-    { lat: 37.7749, lon: -124.4194 }, 
-    { lat: 36.7688, lon: -124.2201 }, 
-    { lat: 32.8159, lon: -123.0756 }, 
+    { lat: 36.7749, lon: -127.4194 }, 
+    { lat: 35.8508, lon: -126.5000 }, 
+    { lat: 33.0522, lon: -123.2437 }, 
   ],
   [
-    { lat: 42.8388, lon: -125.3613 }, 
+    { lat: 39.7128, lon: -130.0060 }, 
     { lat: 38.2904, lon: -128.6122 }, 
-    { lat: 37.9072, lon: -127.0369  }, 
+    { lat: 37.9072, lon: -127.0369 }, 
   ],
 ];
 
 // ✅ Generate multiple ships with varied routes
-const routes = generateRandomRoutes(baseRoutes, 7); // 🚢 Create 5x more ships
+const routes = generateRandomRoutes(baseRoutes, 5); // 🚢 Create 5x more ships
 
 const App = () => {
   const [ships, setShips] = useState([]);
@@ -38,7 +38,7 @@ const App = () => {
   });
 
   useEffect(() => {
-    const detailedRoutes = routes.map(route => generateDetailedRoute(route, 5, 500));
+    const detailedRoutes = routes.map(route => generateDetailedRoute(route, 15, 2000));
     console.log(`🚢 Generated ${detailedRoutes.length} ship routes`);
 
     const aisSim = new AISSimulator(detailedRoutes, (updatedShips) => {
@@ -46,7 +46,7 @@ const App = () => {
         return {
           ...ship,
           speedOverGround: (Math.random() * 10 + 5).toFixed(2), // Random speed between 5-15 knots
-          heading: ship.heading, // Keep the heading assigned in AISSimulator
+          heading: Math.floor(Math.random() * 360), // Random heading
           type: shipTypes[index % shipTypes.length],
           country: Object.keys(countryFlags)[index % Object.keys(countryFlags).length],
         };
