@@ -11,7 +11,7 @@ const countryFlags = { USA: "🇺🇸", UK: "🇬🇧", China: "🇨🇳", Germa
 
 const baseRoutes = [
   [{ lat: 37.7749, lon: -124.4194 }, { lat: 36.7688, lon: -124.2201 }, { lat: 32.8159, lon: -123.0756 }],
-  [{ lat: 42.8388, lon: -125.3613 }, { lat: 48.2904, lon: -127.6122 }, { lat: 26.9072, lon: -116.0369 }],
+  [{ lat: 42.8388, lon: -125.3613 }, { lat: 38.2904, lon: -128.6122 }, { lat: 37.9072, lon: -127.0369 }],
 ];
 
 const routes = generateRandomRoutes(baseRoutes, 5); // 🚢 Create 5x more ships
