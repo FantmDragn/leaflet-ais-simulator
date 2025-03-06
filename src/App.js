@@ -24,7 +24,7 @@ const baseRoutes = [
 ];
 
 // ✅ Generate multiple ships with varied routes
-const routes = generateRandomRoutes(baseRoutes, 5); // 🚢 Create 5x more ships
+const routes = generateRandomRoutes(baseRoutes, 7); // 🚢 Create 5x more ships
 
 const App = () => {
   const [ships, setShips] = useState([]);

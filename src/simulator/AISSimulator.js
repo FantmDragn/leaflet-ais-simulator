@@ -17,6 +17,10 @@ export class AISSimulator {
         const startWaypoint = Math.floor(Math.random() * route.length);
         const [startLat, startLon] = route[startWaypoint];
 
+        // Add random offset to latitude and longitude to spread ships
+        startLat += (Math.random() - 0.5) * 0.5; // Spread ships up to ~50km north/south
+        startLon += (Math.random() - 0.5) * 0.5; // Spread ships up to ~50km east/west
+
         return {
           id: `ship-${index + 1}-${i + 1}`,
           route,
@@ -35,6 +39,9 @@ export class AISSimulator {
           const startWaypoint = Math.floor(Math.random() * route.length);
           const [startLat, startLon] = route[startWaypoint];
 
+          startLat += (Math.random() - 0.5) * 0.3; // Spread slightly
+          startLon += 0.7 + Math.random() * 0.5; // Move eastward, spread even more
+          
           return {
             id: `ship-east-${index + 1}-${i + 1}`,
             route,
