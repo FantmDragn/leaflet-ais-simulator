@@ -71,6 +71,11 @@ export function generateDetailedRoute(route, speedKnot, updateIntervalMs) {
 
     const segmentPoints = interpolateBetweenPoints(start, end, distancePerUpdate);
 
+    if (segmentPoints.length > 1000) { // 🚨 Prevent excessive waypoints
+    console.warn(`⚠️ Too many waypoints (${segmentPoints.length}) between ${start} and ${end}, limiting to 1000.`);
+    segmentPoints.length = 1000; // Trim excess points
+    }
+
     if (i > 0) segmentPoints.shift(); // Avoid duplicate points
     detailedRoute.push(...segmentPoints);
   }
