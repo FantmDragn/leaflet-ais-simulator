@@ -34,7 +34,7 @@ const App = () => {
     latitude: 10 + Math.random() * 20, // Random latitude in Pacific
     longitude: -160 + Math.random() * 40, // Random longitude in Pacific
     speedOverGround: (Math.random() * 10 + 5).toFixed(2), // Random speed between 5-15 knots
-    heading: ship.heading, // Keep the heading assigned in AISSimulator
+    heading: Math.floor(Math.random() * 360), // Random heading
   });
 
   useEffect(() => {
@@ -46,7 +46,7 @@ const App = () => {
         return {
           ...ship,
           speedOverGround: (Math.random() * 10 + 5).toFixed(2), // Random speed between 5-15 knots
-          heading: Math.floor(Math.random() * 360), // Random heading
+          heading: ship.heading, // Keep the heading assigned in AISSimulator
           type: shipTypes[index % shipTypes.length],
           country: Object.keys(countryFlags)[index % Object.keys(countryFlags).length],
         };
