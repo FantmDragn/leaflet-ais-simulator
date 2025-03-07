@@ -29,7 +29,15 @@ export default function MapComponent() {
   const [rangeRings, setRangeRings] = useState([]);
   const [selectedShipId, setSelectedShipId] = useState(null); // Track selected ship
   useEffect(() => {
-    console.log("🟢 Range Rings Updated:", rangeRings);
+    console.log("🟢 Range Rings Updated in State:", rangeRings);
+
+    // Manually trigger a Leaflet map refresh to ensure rendering
+    if (rangeRings.length > 0) {
+      setTimeout(() => {
+        setRangeRings([...rangeRings]); // Reassign to force re-render
+        console.log("🔄 Manually refreshing Leaflet map.");
+      }, 50);
+    }
   }, [rangeRings]);  // 🔥 Ensures React re-renders when rangeRings changes
   
   // Initialize AIS Simulator
@@ -83,8 +91,12 @@ export default function MapComponent() {
     console.log("🔴 Setting range rings state:", newRings);
   
     // 🔥 Force React to detect the state change
-    setRangeRings([]);  // Reset first
-    setTimeout(() => setRangeRings([...newRings]), 10);
+    setRangeRings([]);  // Clear existing rings
+    setTimeout(() => {
+      setRangeRings([...newRings]);  // Force a React state update
+      console.log("🟢 Range Rings Updated in State:", [...newRings]);
+    }, 50); // Delay update to ensure React processes it
+    
     setSelectedShipId(ship.id);
   };
   
