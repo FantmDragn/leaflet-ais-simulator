@@ -20,6 +20,7 @@ export default function MapComponent() {
   const [ships, setShips] = useState([]);
   const [mapTheme, setMapTheme] = useState("dark");
   const [rangeRings, setRangeRings] = useState([]);
+  const [selectedShip, setSelectedShip] = useState(null);
 
   useEffect(() => {
     const detailedRoutes = routes.map(route => generateDetailedRoute(route, 15, 2000));
@@ -59,6 +60,7 @@ export default function MapComponent() {
     });
 
     setRangeRings(rings);
+    setSelectedShip(ship.id); // Store the ship ID to track which ship the rings belong to
   };
 
   return (
@@ -103,7 +105,24 @@ export default function MapComponent() {
                   <b>Heading:</b> {ship.heading}°<br />
                   <b>Type:</b> {ship.type}<br />
                   <b>Flag:</b> {countryFlags[ship.country]} {ship.country}<br />
-                  <button onClick={() => calculateRangeRings(ship)}>Show Range Rings</button>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent popup from closing
+                      calculateRangeRings(ship);
+                    }} 
+                    style={{
+                      marginTop: "5px",
+                      padding: "6px",
+                      background: "#007BFF",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "5px",
+                      cursor: "pointer",
+                      width: "100%",
+                    }}
+                  >
+                    Show Range Rings
+                  </button>
                 </Popup>
               </CircleMarker>
 
