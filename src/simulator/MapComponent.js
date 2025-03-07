@@ -28,7 +28,10 @@ export default function MapComponent() {
   const [mapTheme, setMapTheme] = useState("dark");
   const [rangeRings, setRangeRings] = useState([]);
   const [selectedShipId, setSelectedShipId] = useState(null); // Track selected ship
-
+  useEffect(() => {
+    console.log("🟢 Range Rings Updated:", rangeRings);
+  }, [rangeRings]);  // 🔥 Ensures React re-renders when rangeRings changes
+  
   // Initialize AIS Simulator
   useEffect(() => {
     const detailedRoutes = routes.map(route => generateDetailedRoute(route, 15, 500));
@@ -53,7 +56,7 @@ export default function MapComponent() {
   // Calculate Range Rings for a Ship
   const calculateRangeRings = (ship) => {
     console.log(`🟢 Calculating range rings for ship: ${ship.id}`);
-    
+  
     const { latitude, longitude, speedOverGround, heading } = ship;
     const speedMetersPerSecond = speedOverGround * 0.51444; // Convert knots to m/s
   
@@ -78,9 +81,13 @@ export default function MapComponent() {
     });
   
     console.log("🔴 Setting range rings state:", newRings);
-    setRangeRings([...newRings]); // 🔥 Force React to update state
+  
+    // 🔥 Force React to detect the state change
+    setRangeRings([]);  // Reset first
+    setTimeout(() => setRangeRings([...newRings]), 10);
     setSelectedShipId(ship.id);
   };
+  
 
   return (
     <div>
@@ -150,15 +157,19 @@ export default function MapComponent() {
           );
         })}
 
-        {/* ✅ Render Range Rings OUTSIDE Ship Loop */}
-        {rangeRings.length > 0 && selectedShipId && rangeRings.map((ring, index) => (
-          <Circle
-            key={index}
-            center={[ring.lat, ring.lon]}
-            radius={ring.radius}
-            pathOptions={{ color: ring.color, fillOpacity: 0.2 }}
-          />
-        ))}
+        {/* ✅ Render Range Rings (Check if this executes) */}
+        {rangeRings.length > 0 && selectedShipId && rangeRings.map((ring, index) => {
+          console.log(`🔴 Rendering range ring ${index + 1} at ${ring.lat}, ${ring.lon}, Radius: ${ring.radius}`);
+          return (
+            <Circle
+              key={index}
+              center={[ring.lat, ring.lon]}
+              radius={ring.radius}
+              pathOptions={{ color: ring.color, fillOpacity: 0.2 }}
+            />
+          );
+        })}
+
 
         {/* ✈️ Aircraft Simulation */}
         <AircraftSimulator helicoptersAsAircraft={true} />
