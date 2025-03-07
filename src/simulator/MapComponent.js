@@ -95,6 +95,10 @@ export default function MapComponent() {
 
       return { lat: newLat, lon: newLon, radius: distance, color: colors[index] };
     });
+    console.log("🔴 Setting range rings state:", rings);
+    setRangeRings([...rings]);  // Ensure React re-renders by creating a new array
+    setSelectedShipId(ship.id);  // Store selected ship ID
+  
 
     setRangeRings(rings);
     setSelectedShipId(ship.id);
@@ -125,6 +129,17 @@ export default function MapComponent() {
           const radianHeading = (ship.heading * Math.PI) / 180;
           const endLat = ship.latitude + lineLength * Math.cos(radianHeading);
           const endLng = ship.longitude + lineLength * Math.sin(radianHeading);
+
+          {/* Render Range Rings for the selected ship */}
+          {rangeRings.length > 0 && selectedShipId && rangeRings.map((ring, index) => (
+            <Circle
+              key={index}
+              center={[ring.lat, ring.lon]}
+              radius={ring.radius}
+              pathOptions={{ color: ring.color, fillOpacity: 0.2 }}
+            />
+          ))}
+
 
 
 // Render JSX elements

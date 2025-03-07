@@ -48,7 +48,9 @@ const App = () => {
 
 // React hooks for managing component state and side effects
   const [ships, setShips] = useState([]);
-
+  const [rangeRings, setRangeRings] = useState([]);  // Store calculated range rings
+  const [selectedShipId, setSelectedShipId] = useState(null); // Store selected ship ID
+  
 // React hooks for managing component state and side effects
   const [simulator, setSimulator] = useState(null);
 
