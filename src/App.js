@@ -190,8 +190,6 @@ const App = () => {
                     <b>Type:</b> {ship.type}<br />
                     <b>Flag:</b> {countryFlags[ship.country]} {ship.country}<br />
 
-                    {/* Debugging Log */}
-                    {console.log(`🔹 Popup opened for ship: ${ship.id}`)}
 
                     {/* Button to Show Range Rings */}
                     <button 

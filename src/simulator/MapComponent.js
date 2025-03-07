@@ -32,7 +32,7 @@ export default function MapComponent() {
   useEffect(() => {
     console.log("🚢 Ships State Updated:", ships);
   }, [ships]);
-  
+
   useEffect(() => {
     console.log("🔍 Selected Ship ID Changed:", selectedShipId);
   }, [selectedShipId]);
@@ -131,49 +131,46 @@ export default function MapComponent() {
           attribution='&copy; OpenStreetMap contributors'
         />
 
-        {/* 🚢 Render Ships */}
-        {/* 🚢 Render Ships */}
 {/* 🚢 Render Ships */}
-{ships.map((ship) => {
-  return (
-    <CircleMarker
-      key={ship.id}
-      center={[ship.latitude, ship.longitude]}
-      radius={4}
-      color="black"
-      fillColor="white"
-      fillOpacity={1}
-      weight={1}
-      stroke={true}
-      eventHandlers={{
-        click: () => {
-          console.log(`🟢 Ship clicked: ${ship.id}`);
-          setSelectedShipId(ship.id); // Only set when clicked
-        },
-      }}
-    >
-      {/* ✅ Ensure the popup only opens for the selected ship */}
-      {selectedShipId === ship.id && (
-        <Popup>
-          <b>🚢 Simulated Ship {ship.id}</b><br />
-          <b>Speed:</b> {ship.speedOverGround} knots<br />
-          <b>Heading:</b> {ship.heading}°<br />
-          <b>Type:</b> {ship.type}<br />
-          <b>Flag:</b> {countryFlags[ship.country]} {ship.country}<br />
-          <button 
-            onClick={(e) => {
-              e.stopPropagation(); // Prevent popup from closing
-              calculateRangeRings(ship);
-            }} 
-            style={{ marginTop: "5px", padding: "6px", background: "#007BFF", color: "white",
-                     border: "none", borderRadius: "5px", cursor: "pointer", width: "100%" }}>
-            Show Range Rings
-          </button>
-        </Popup>
-      )}
-    </CircleMarker>
-  );
-})}
+{ships.map((ship) => (
+  <CircleMarker
+    key={ship.id}
+    center={[ship.latitude, ship.longitude]}
+    radius={4}
+    color="black"
+    fillColor="white"
+    fillOpacity={1}
+    weight={1}
+    stroke={true}
+    eventHandlers={{
+      click: () => {
+        console.log(`🟢 Ship clicked: ${ship.id}`);
+        setSelectedShipId(ship.id); // ✅ Only set when clicked
+      },
+    }}
+  >
+    {/* ✅ Ensure the popup only opens for the selected ship */}
+    {selectedShipId === ship.id && (
+      <Popup autoClose={false} closeOnClick={false}>
+        <b>🚢 Simulated Ship {ship.id}</b><br />
+        <b>Speed:</b> {ship.speedOverGround} knots<br />
+        <b>Heading:</b> {ship.heading}°<br />
+        <b>Type:</b> {ship.type}<br />
+        <b>Flag:</b> {countryFlags[ship.country]} {ship.country}<br />
+        <button 
+          onClick={(e) => {
+            e.stopPropagation(); // ✅ Prevents popup from closing on click
+            calculateRangeRings(ship);
+          }} 
+          style={{ marginTop: "5px", padding: "6px", background: "#007BFF", color: "white",
+                   border: "none", borderRadius: "5px", cursor: "pointer", width: "100%" }}>
+          Show Range Rings
+        </button>
+      </Popup>
+    )}
+  </CircleMarker>
+))}
+
 
 
 
