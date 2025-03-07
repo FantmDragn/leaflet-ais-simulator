@@ -1,3 +1,4 @@
+
 // MapComponent.js - Renders the interactive map using React Leaflet.
 // Displays ships, aircraft, and range rings for ship movement prediction.
 
@@ -28,18 +29,20 @@ export default function MapComponent() {
   const [mapTheme, setMapTheme] = useState("dark");
   const [rangeRings, setRangeRings] = useState([]);
   const [selectedShipId, setSelectedShipId] = useState(null); // Track selected ship
+
+  // Ensure React re-renders when rangeRings changes
   useEffect(() => {
     console.log("🟢 Range Rings Updated in State:", rangeRings);
 
-    // Manually trigger a Leaflet map refresh to ensure rendering
+    // Manually trigger a Leaflet map refresh if needed
     if (rangeRings.length > 0) {
       setTimeout(() => {
-        setRangeRings([...rangeRings]); // Reassign to force re-render
+        setRangeRings([...rangeRings]); // Force React to re-render
         console.log("🔄 Manually refreshing Leaflet map.");
-      }, 50);
+      }, 100);
     }
-  }, [rangeRings]);  // 🔥 Ensures React re-renders when rangeRings changes
-  
+  }, [rangeRings]);
+
   // Initialize AIS Simulator
   useEffect(() => {
     const detailedRoutes = routes.map(route => generateDetailedRoute(route, 15, 500));
@@ -64,42 +67,41 @@ export default function MapComponent() {
   // Calculate Range Rings for a Ship
   const calculateRangeRings = (ship) => {
     console.log(`🟢 Calculating range rings for ship: ${ship.id}`);
-  
+
     const { latitude, longitude, speedOverGround, heading } = ship;
     const speedMetersPerSecond = speedOverGround * 0.51444; // Convert knots to m/s
-  
+
     if (!latitude || !longitude || !speedOverGround || !heading) {
       console.error("❌ Missing ship data:", ship);
       return;
     }
-  
+
     const timeIntervals = [5, 10, 15]; // Time in minutes
     const colors = ["blue", "green", "red"];
-  
+
     const newRings = timeIntervals.map((time, index) => {
       const distance = speedMetersPerSecond * time * 60; // Distance in meters
       const radianHeading = (heading * Math.PI) / 180;
-  
+
       const newLat = latitude + (distance / 111320) * Math.cos(radianHeading);
       const newLon = longitude + (distance / (40075000 / 360)) * Math.sin(radianHeading);
-  
+
       console.log(`🟠 Ring ${index + 1}: Lat=${newLat}, Lon=${newLon}, Radius=${distance}`);
       
       return { lat: newLat, lon: newLon, radius: distance, color: colors[index] };
     });
-  
+
     console.log("🔴 Setting range rings state:", newRings);
-  
-    // 🔥 Force React to detect the state change
-    setRangeRings([]);  // Clear existing rings
+
+    // Force React to recognize state change
+    setRangeRings([]);  // Clear existing rings first
     setTimeout(() => {
-      setRangeRings([...newRings]);  // Force a React state update
-      console.log("🟢 Range Rings Updated in State:", [...newRings]);
-    }, 50); // Delay update to ensure React processes it
-    
+      setRangeRings([...newRings]);
+      console.log("🟢 Updated range rings in state:", [...newRings]);
+    }, 100); // Delay ensures UI updates properly
+
     setSelectedShipId(ship.id);
   };
-  
 
   return (
     <div>
@@ -121,11 +123,6 @@ export default function MapComponent() {
 
         {/* 🚢 Render Ships */}
         {ships.map((ship) => {
-          const lineLength = Math.min(0.01 * ship.speedOverGround, 0.1);
-          const radianHeading = (ship.heading * Math.PI) / 180;
-          const endLat = ship.latitude + lineLength * Math.cos(radianHeading);
-          const endLng = ship.longitude + lineLength * Math.sin(radianHeading);
-
           return (
             <CircleMarker
               key={ship.id}
@@ -136,9 +133,7 @@ export default function MapComponent() {
               fillOpacity={1}
               weight={1}
               stroke={true}
-              eventHandlers={{
-                click: () => setSelectedShipId(ship.id),
-              }}
+              eventHandlers={{ click: () => setSelectedShipId(ship.id) }}
             >
               <Popup>
                 <b>🚢 Simulated Ship {ship.id}</b><br />
@@ -151,17 +146,8 @@ export default function MapComponent() {
                     e.stopPropagation(); // Prevent popup from closing
                     calculateRangeRings(ship);
                   }} 
-                  style={{
-                    marginTop: "5px",
-                    padding: "6px",
-                    background: "#007BFF",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                    width: "100%",
-                  }}
-                >
+                  style={{ marginTop: "5px", padding: "6px", background: "#007BFF", color: "white",
+                           border: "none", borderRadius: "5px", cursor: "pointer", width: "100%" }}>
                   Show Range Rings
                 </button>
               </Popup>
@@ -169,19 +155,11 @@ export default function MapComponent() {
           );
         })}
 
-        {/* ✅ Render Range Rings (Check if this executes) */}
-        {rangeRings.length > 0 && selectedShipId && rangeRings.map((ring, index) => {
-          console.log(`🔴 Rendering range ring ${index + 1} at ${ring.lat}, ${ring.lon}, Radius: ${ring.radius}`);
-          return (
-            <Circle
-              key={index}
-              center={[ring.lat, ring.lon]}
-              radius={ring.radius}
-              pathOptions={{ color: ring.color, fillOpacity: 0.2 }}
-            />
-          );
-        })}
-
+        {/* ✅ Render Range Rings (Ensuring Execution) */}
+        {rangeRings.length > 0 && selectedShipId && rangeRings.map((ring, index) => (
+          <Circle key={index} center={[ring.lat, ring.lon]} radius={ring.radius}
+                  pathOptions={{ color: ring.color, fillOpacity: 0.2 }} />
+        ))}
 
         {/* ✈️ Aircraft Simulation */}
         <AircraftSimulator helicoptersAsAircraft={true} />
