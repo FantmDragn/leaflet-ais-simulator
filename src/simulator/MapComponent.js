@@ -29,7 +29,10 @@ export default function MapComponent() {
   const [mapTheme, setMapTheme] = useState("dark");
   const [rangeRings, setRangeRings] = useState([]);
   const [selectedShipId, setSelectedShipId] = useState(null); // Track selected ship
-
+  useEffect(() => {
+    console.log("🚢 Ships State Updated:", ships);
+  }, [ships]);
+  
   useEffect(() => {
     console.log("🔍 Selected Ship ID Changed:", selectedShipId);
   }, [selectedShipId]);
@@ -130,6 +133,7 @@ export default function MapComponent() {
 
         {/* 🚢 Render Ships */}
         {/* 🚢 Render Ships */}
+{/* 🚢 Render Ships */}
 {ships.map((ship) => {
   return (
     <CircleMarker
@@ -143,12 +147,13 @@ export default function MapComponent() {
       stroke={true}
       eventHandlers={{
         click: () => {
-          console.log(`🟢 Ship clicked: ${ship.id}`); // Log when a user clicks
-          setSelectedShipId(ship.id); // Set selected ship only when clicked
+          console.log(`🟢 Ship clicked: ${ship.id}`);
+          setSelectedShipId(ship.id); // Only set when clicked
         },
       }}
     >
-      {selectedShipId === ship.id && ( // ✅ Only show popup if the ship is selected
+      {/* ✅ Ensure the popup only opens for the selected ship */}
+      {selectedShipId === ship.id && (
         <Popup>
           <b>🚢 Simulated Ship {ship.id}</b><br />
           <b>Speed:</b> {ship.speedOverGround} knots<br />
@@ -169,6 +174,7 @@ export default function MapComponent() {
     </CircleMarker>
   );
 })}
+
 
 
         {/* ✅ Render Range Rings (Ensuring Execution) */}
