@@ -101,6 +101,11 @@ const App = () => {
     
     const { latitude, longitude, speedOverGround, heading } = ship;
     const speedMetersPerSecond = speedOverGround * 0.51444; // Convert knots to m/s
+
+    if (!latitude || !longitude || !speedOverGround || !heading) {
+      console.error("❌ Missing ship data:", ship);
+      return;
+    }
   
     const timeIntervals = [5, 10, 15]; // Time in minutes
     const colors = ["blue", "green", "red"];

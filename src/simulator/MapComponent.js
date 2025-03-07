@@ -130,15 +130,18 @@ export default function MapComponent() {
           const endLat = ship.latitude + lineLength * Math.cos(radianHeading);
           const endLng = ship.longitude + lineLength * Math.sin(radianHeading);
 
-          {/* Render Range Rings for the selected ship */}
-          {rangeRings.length > 0 && selectedShipId && rangeRings.map((ring, index) => (
-            <Circle
-              key={index}
-              center={[ring.lat, ring.lon]}
-              radius={ring.radius}
-              pathOptions={{ color: ring.color, fillOpacity: 0.2 }}
-            />
-          ))}
+          {/* Render Range Rings */}
+{rangeRings.length > 0 && selectedShipId && rangeRings.map((ring, index) => {
+  console.log(`🔴 Rendering range ring ${index + 1} at ${ring.lat}, ${ring.lon}`);
+  return (
+    <Circle
+      key={index}
+      center={[ring.lat, ring.lon]}
+      radius={ring.radius}
+      pathOptions={{ color: ring.color, fillOpacity: 0.2 }}
+    />
+  );
+})}
 
 
 
@@ -186,15 +189,18 @@ export default function MapComponent() {
           );
         })}
 
-        {/* Render Range Rings if a ship is selected */}
-        {rangeRings.length > 0 && selectedShipId && rangeRings.map((ring, index) => (
-          <Circle
-            key={index}
-            center={[ring.lat, ring.lon]}
-            radius={ring.radius}
-            pathOptions={{ color: ring.color, fillOpacity: 0.2 }}
-          />
-        ))}
+        {/* Render Range Rings */}
+        {rangeRings.length > 0 && selectedShipId && rangeRings.map((ring, index) => {
+          console.log(`🔴 Rendering range ring ${index + 1} at ${ring.lat}, ${ring.lon}`);
+          return (
+            <Circle
+              key={index}
+              center={[ring.lat, ring.lon]}
+              radius={ring.radius}
+              pathOptions={{ color: ring.color, fillOpacity: 0.2 }}
+    />
+  );
+})}
 
         {/* ✈️ Aircraft Simulation */}
         <AircraftSimulator helicoptersAsAircraft={true} />
