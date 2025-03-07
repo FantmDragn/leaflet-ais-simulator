@@ -94,6 +94,31 @@ const App = () => {
     setMapTheme(mapTheme === "dark" ? "light" : "dark");
   };
 
+  const calculateRangeRings = (ship) => {
+    console.log(`🟢 Calculating range rings for ship: ${ship.id}`);
+    
+    const { latitude, longitude, speedOverGround, heading } = ship;
+    const speedMetersPerSecond = speedOverGround * 0.51444; // Convert knots to m/s
+  
+    const timeIntervals = [5, 10, 15]; // Time in minutes
+    const colors = ["blue", "green", "red"];
+  
+    const rings = timeIntervals.map((time, index) => {
+      const distance = speedMetersPerSecond * time * 60; // Distance in meters
+      const radianHeading = (heading * Math.PI) / 180;
+  
+      const newLat = latitude + (distance / 111320) * Math.cos(radianHeading);
+      const newLon = longitude + (distance / (40075000 / 360)) * Math.sin(radianHeading);
+  
+      console.log(`🟠 Ring ${index + 1}: Lat=${newLat}, Lon=${newLon}, Radius=${distance}`);
+      
+      return { lat: newLat, lon: newLon, radius: distance, color: colors[index] };
+    });
+  
+    setRangeRings(rings);
+    setSelectedShipId(ship.id);
+  };
+  
 
 // Render JSX elements
   return (
