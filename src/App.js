@@ -156,7 +156,33 @@ const App = () => {
                     <b>Speed:</b> {ship.speedOverGround} knots<br />
                     <b>Heading:</b> {ship.heading}°<br />
                     <b>Type:</b> {ship.type}<br />
-                    <b>Flag:</b> {countryFlags[ship.country]} {ship.country}
+                    <b>Flag:</b> {countryFlags[ship.country]} {ship.country}<br />
+
+                    {/* Debugging Log */}
+                    {console.log(`🔹 Popup opened for ship: ${ship.id}`)}
+
+                    {/* Button to Show Range Rings */}
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent popup from closing
+                        console.log("🔵 Button clicked for ship:", ship.id);
+                        calculateRangeRings(ship); // Make sure this function is defined in `App.js`
+                      }} 
+                      style={{
+                        marginTop: "5px",
+                        padding: "6px",
+                        background: "#007BFF",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "5px",
+                        cursor: "pointer",
+                        width: "100%",
+                        fontSize: "14px",
+                        textAlign: "center",
+                      }}
+                    >
+                      Show Range Rings
+                    </button>
                   </Popup>
                 </CircleMarker>
                 
