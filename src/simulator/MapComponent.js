@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { MapContainer, TileLayer, CircleMarker, Polyline, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Circle, CircleMarker, Polyline, Popup } from "react-leaflet";
 import { AISSimulator } from "../simulator/AISSimulator";
 import AircraftSimulator from "../simulator/AircraftSimulator"; 
 import { generateDetailedRoute, generateRandomRoutes } from "../utils/routeUtils";
@@ -19,6 +19,7 @@ const routes = generateRandomRoutes(baseRoutes, 7);
 export default function MapComponent() {
   const [ships, setShips] = useState([]);
   const [mapTheme, setMapTheme] = useState("dark");
+  const [rangeRings, setRangeRings] = useState([]);
 
   useEffect(() => {
     const detailedRoutes = routes.map(route => generateDetailedRoute(route, 15, 2000));
@@ -37,6 +38,27 @@ export default function MapComponent() {
 
   const toggleMapTheme = () => {
     setMapTheme(mapTheme === "dark" ? "light" : "dark");
+  };
+
+  const calculateRangeRings = (ship) => {
+    const { latitude, longitude, speedOverGround, heading } = ship;
+    const speedMetersPerSecond = speedOverGround * 0.51444; // Convert knots to m/s
+
+    const timeIntervals = [5, 10, 15]; // Time in minutes
+    const colors = ["blue", "green", "red"];
+
+    const rings = timeIntervals.map((time, index) => {
+      const distance = speedMetersPerSecond * time * 60; // Distance in meters
+      const radianHeading = (heading * Math.PI) / 180;
+      
+      // Estimate new position (for illustrative purposes, we use distance only)
+      const newLat = latitude + (distance / 111320) * Math.cos(radianHeading);
+      const newLon = longitude + (distance / (40075000 / 360)) * Math.sin(radianHeading);
+
+      return { lat: newLat, lon: newLon, radius: distance, color: colors[index] };
+    });
+
+    setRangeRings(rings);
   };
 
   return (
@@ -80,7 +102,8 @@ export default function MapComponent() {
                   <b>Speed:</b> {ship.speedOverGround} knots<br />
                   <b>Heading:</b> {ship.heading}°<br />
                   <b>Type:</b> {ship.type}<br />
-                  <b>Flag:</b> {countryFlags[ship.country]} {ship.country}
+                  <b>Flag:</b> {countryFlags[ship.country]} {ship.country}<br />
+                  <button onClick={() => calculateRangeRings(ship)}>Show Range Rings</button>
                 </Popup>
               </CircleMarker>
 
@@ -93,7 +116,17 @@ export default function MapComponent() {
           );
         })}
 
-        {/* ✈️ Aircraft Simulation (Includes Helicopters) */}
+        {/* Render Range Rings */}
+        {rangeRings.map((ring, index) => (
+          <Circle
+            key={index}
+            center={[ring.lat, ring.lon]}
+            radius={ring.radius}
+            pathOptions={{ color: ring.color, fillOpacity: 0.2 }}
+          />
+        ))}
+
+        {/* ✈️ Aircraft Simulation */}
         <AircraftSimulator helicoptersAsAircraft={true} />
       </MapContainer>
     </div>
