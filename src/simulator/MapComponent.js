@@ -20,7 +20,7 @@ export default function MapComponent() {
   const [ships, setShips] = useState([]);
   const [mapTheme, setMapTheme] = useState("dark");
   const [rangeRings, setRangeRings] = useState([]);
-  const [selectedShip, setSelectedShip] = useState(null);
+  const [selectedShipId, setSelectedShipId] = useState(null);  // Track selected ship
 
   useEffect(() => {
     const detailedRoutes = routes.map(route => generateDetailedRoute(route, 15, 2000));
@@ -42,6 +42,7 @@ export default function MapComponent() {
   };
 
   const calculateRangeRings = (ship) => {
+    console.log(`Calculating range rings for ship: ${ship.id}`);
     const { latitude, longitude, speedOverGround, heading } = ship;
     const speedMetersPerSecond = speedOverGround * 0.51444; // Convert knots to m/s
 
@@ -60,7 +61,7 @@ export default function MapComponent() {
     });
 
     setRangeRings(rings);
-    setSelectedShip(ship.id); // Store the ship ID to track which ship the rings belong to
+    setSelectedShipId(ship.id);
   };
 
   return (
@@ -88,55 +89,50 @@ export default function MapComponent() {
           const endLng = ship.longitude + lineLength * Math.sin(radianHeading);
 
           return (
-            <>
-              <CircleMarker
-                key={ship.id}
-                center={[ship.latitude, ship.longitude]}
-                radius={4}
-                color="black"
-                fillColor="white"
-                fillOpacity={1}
-                weight={1}
-                stroke={true}
-              >
-                <Popup>
-                  <b>🚢 Simulated Ship {ship.id}</b><br />
-                  <b>Speed:</b> {ship.speedOverGround} knots<br />
-                  <b>Heading:</b> {ship.heading}°<br />
-                  <b>Type:</b> {ship.type}<br />
-                  <b>Flag:</b> {countryFlags[ship.country]} {ship.country}<br />
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation(); // Prevent popup from closing
-                      calculateRangeRings(ship);
-                    }} 
-                    style={{
-                      marginTop: "5px",
-                      padding: "6px",
-                      background: "#007BFF",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "5px",
-                      cursor: "pointer",
-                      width: "100%",
-                    }}
-                  >
-                    Show Range Rings
-                  </button>
-                </Popup>
-              </CircleMarker>
-
-              <Polyline
-                positions={[[ship.latitude, ship.longitude], [endLat, endLng]]}
-                color={mapTheme === "dark" ? "white" : "black"}
-                weight={2}
-              />
-            </>
+            <CircleMarker
+              key={ship.id}
+              center={[ship.latitude, ship.longitude]}
+              radius={4}
+              color="black"
+              fillColor="white"
+              fillOpacity={1}
+              weight={1}
+              stroke={true}
+              eventHandlers={{
+                click: () => setSelectedShipId(ship.id),
+              }}
+            >
+              <Popup>
+                <b>🚢 Simulated Ship {ship.id}</b><br />
+                <b>Speed:</b> {ship.speedOverGround} knots<br />
+                <b>Heading:</b> {ship.heading}°<br />
+                <b>Type:</b> {ship.type}<br />
+                <b>Flag:</b> {countryFlags[ship.country]} {ship.country}<br />
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent popup from closing
+                    calculateRangeRings(ship);
+                  }} 
+                  style={{
+                    marginTop: "5px",
+                    padding: "6px",
+                    background: "#007BFF",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                    width: "100%",
+                  }}
+                >
+                  Show Range Rings
+                </button>
+              </Popup>
+            </CircleMarker>
           );
         })}
 
-        {/* Render Range Rings */}
-        {rangeRings.map((ring, index) => (
+        {/* Render Range Rings if a ship is selected */}
+        {rangeRings.length > 0 && selectedShipId && rangeRings.map((ring, index) => (
           <Circle
             key={index}
             center={[ring.lat, ring.lon]}

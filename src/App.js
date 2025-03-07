@@ -94,7 +94,7 @@ const App = () => {
 
         {/* 🚢 Render Ships with Direction Lines */}
         {ships.map((ship, index) => {
-            const lineLength = Math.min(0.01 * ship.speedOverGround, 0.1); // Adjust length based on speed, max 0.1
+            const lineLength = Math.min(0.001 * ship.speedOverGround, 0.01); // Adjust length based on speed, max 0.1
             const radianHeading = (ship.heading * Math.PI) / 180;
             const endLat = ship.latitude + lineLength * Math.cos(radianHeading);
             const endLng = ship.longitude + lineLength * Math.sin(radianHeading);
