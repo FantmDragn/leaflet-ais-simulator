@@ -14,7 +14,7 @@ const baseRoutes = [
   [{ lat: 42.8388, lon: -125.3613 }, { lat: 38.2904, lon: -128.6122 }, { lat: 37.9072, lon: -127.0369 }],
 ];
 
-const routes = generateRandomRoutes(baseRoutes, 7); // 🚢 Create 5x more ships
+const routes = generateRandomRoutes(baseRoutes, 7);
 
 export default function MapComponent() {
   const [ships, setShips] = useState([]);
@@ -93,8 +93,8 @@ export default function MapComponent() {
           );
         })}
 
-        {/* ✈️ Aircraft Simulation */}
-        <AircraftSimulator />
+        {/* ✈️ Aircraft Simulation (Includes Helicopters) */}
+        <AircraftSimulator helicoptersAsAircraft={true} />
       </MapContainer>
     </div>
   );
