@@ -1,16 +1,24 @@
+// routeUtils.js - Contains utility functions for route calculations
+// Includes functions for bearing calculations, waypoint interpolation, and route expansion.
 // src/utils/routeUtils.js
 
 // Convert degrees to radians
+
+// Function/Class definition
 export function toRad(deg) {
   return deg * Math.PI / 180;
 }
 
 // Convert radians to degrees
+
+// Function/Class definition
 export function toDeg(rad) {
   return rad * 180 / Math.PI;
 }
 
 // Calculate the initial bearing (heading) between two coordinates
+
+// Function/Class definition
 export function calculateBearing(start, end) {
   const lat1 = toRad(start[0]);
   const lon1 = toRad(start[1]);
@@ -24,10 +32,14 @@ export function calculateBearing(start, end) {
             Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
 
   let bearing = toDeg(Math.atan2(x, y));
+
+// Render JSX elements
   return (bearing + 360) % 360; // Normalize to 0-360 degrees
 }
 
 // Generate smooth waypoints (~15m apart)
+
+// Function/Class definition
 export function interpolateBetweenPoints(start, end, distancePerUpdate) {
   start = Array.isArray(start) ? start : [start.lat, start.lon];
   end = Array.isArray(end) ? end : [end.lat, end.lon];
@@ -59,6 +71,8 @@ export function interpolateBetweenPoints(start, end, distancePerUpdate) {
 }
 
 // Expand sparse waypoints into many steps (~15m apart)
+
+// Function/Class definition
 export function generateDetailedRoute(route, speedKnot, updateIntervalMs) {
   const speedMs = speedKnot * 0.514444; // Convert knots to meters per second
   const updateIntervalSeconds = updateIntervalMs / 1000;
@@ -80,12 +94,16 @@ export function generateDetailedRoute(route, speedKnot, updateIntervalMs) {
     detailedRoute.push(...segmentPoints);
   }
 
+
+// Debugging output
   console.log(`✅ Route expanded from ${route.length} to ${detailedRoute.length} waypoints`);
 
   return detailedRoute.length > 0 ? detailedRoute : [[0, 0]]; // Prevent empty routes
 }
 
 // Generate randomized ship routes
+
+// Function/Class definition
 export function generateRandomRoutes(baseRoutes, numShips) {
   let newRoutes = [];
   for (let i = 0; i < numShips; i++) {

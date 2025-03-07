@@ -1,5 +1,15 @@
+// AircraftSimulator.js - Handles the simulation of aircraft movement.
+// Simulates aircraft flying between predefined airports and helicopters circling a location.
+
+// Import necessary dependencies
+
+// React hooks for managing component state and side effects
 import { useState, useEffect } from "react";
+
+// Import necessary dependencies
 import { Marker, Popup } from "react-leaflet";
+
+// Import necessary dependencies
 import L from "leaflet";
 
 // Define airport locations as coordinate arrays
@@ -14,12 +24,16 @@ const airports = {
 
 // Define icons for aircraft and helicopters with black outlines for light mode
 const aircraftIcon = (mapTheme) => L.divIcon({
+
+// Function/Class definition
   className: "aircraft-icon",
   html: `<span style='color: white; -webkit-text-stroke: ${mapTheme === "light" ? "1px black" : "none"};'>▲</span>`,
   iconSize: [20, 20],
 });
 
 const helicopterIcon = (mapTheme) => L.divIcon({
+
+// Function/Class definition
   className: "aircraft-icon",
   html: `<span style='color: white; -webkit-text-stroke: ${mapTheme === "light" ? "1px black" : "none"};'>▲</span>`,
   iconSize: [20, 20],
@@ -41,9 +55,15 @@ const helicopterRoutes = [
 ];
 
 const AircraftSimulator = ({ mapTheme }) => {
+
+// React hooks for managing component state and side effects
   const [aircraft, setAircraft] = useState([]);
+
+// React hooks for managing component state and side effects
   const [helicopters, setHelicopters] = useState([]);
 
+
+// React hooks for managing component state and side effects
   useEffect(() => {
     // Generate initial flights with structured position and destination objects
     const generateFlights = () => {
@@ -71,7 +91,11 @@ const AircraftSimulator = ({ mapTheme }) => {
     setHelicopters(generateHelicopters());
   }, []);
 
+
+// React hooks for managing component state and side effects
   useEffect(() => {
+
+// Set an interval to update simulation data periodically
     const interval = setInterval(() => {
       setAircraft((prevAircraft) =>
         prevAircraft.map((plane) => {
@@ -102,9 +126,13 @@ const AircraftSimulator = ({ mapTheme }) => {
       );
     }, 1000);
 
+
+// Render JSX elements
     return () => clearInterval(interval);
   }, []);
 
+
+// Render JSX elements
   return (
     <>
       {/* Render aircraft only if they have valid lat/lng positions */}

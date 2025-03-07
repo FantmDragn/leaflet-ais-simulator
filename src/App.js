@@ -1,8 +1,24 @@
+// App.js - Main entry point for the React application
+// Handles map rendering, ship simulations, and theme toggling.
+
+// Import necessary dependencies
+
+// React hooks for managing component state and side effects
 import React, { useEffect, useState } from "react";
+
+// Import necessary dependencies
 import { MapContainer, TileLayer, CircleMarker, Polyline, Popup } from "react-leaflet";
+
+// Import necessary dependencies
 import "leaflet/dist/leaflet.css";
+
+// Import necessary dependencies
 import { AISSimulator } from "./simulator/AISSimulator";
+
+// Import necessary dependencies
 import AircraftSimulator from "./simulator/AircraftSimulator";
+
+// Import necessary dependencies
 import { generateDetailedRoute, generateRandomRoutes } from "./utils/routeUtils";
 
 const mapStyle = { height: "100vh", width: "100vw" };
@@ -24,12 +40,22 @@ const baseRoutes = [
 ];
 
 // ✅ Generate multiple ships with varied routes
+
+// Define base routes and generate random ship routes
 const routes = generateRandomRoutes(baseRoutes,7); // 🚢 Create 5x more ships
 
 const App = () => {
+
+// React hooks for managing component state and side effects
   const [ships, setShips] = useState([]);
+
+// React hooks for managing component state and side effects
   const [simulator, setSimulator] = useState(null);
+
+// React hooks for managing component state and side effects
   const [mapTheme, setMapTheme] = useState("dark"); // Toggle between dark and light maps
+
+// React hooks for managing component state and side effects
   const [unknownShip, setUnknownShip] = useState({
     latitude: 10 + Math.random() * 20, // Random latitude in Pacific
     longitude: -160 + Math.random() * 40, // Random longitude in Pacific
@@ -37,28 +63,39 @@ const App = () => {
     heading: Math.floor(Math.random() * 360), // Random heading
   });
 
+
+// React hooks for managing component state and side effects
   useEffect(() => {
-    const detailedRoutes = routes.map(route => generateDetailedRoute(route, 15, 2000));
+
+// Define base routes and generate random ship routes
+    const detailedRoutes = routes.map(route => generateDetailedRoute(route, 15, 500));
+
+// Debugging output
     console.log(`🚢 Generated ${detailedRoutes.length} ship routes`);
 
     const aisSim = new AISSimulator(detailedRoutes, (updatedShips) => {
-      setShips(updatedShips.map((ship, index) => {
-        return {
-          ...ship,
-          speedOverGround: (Math.random() * 10 + 5).toFixed(2), // Random speed between 5-15 knots
+      setShips((prevShips) => {
+        return updatedShips.map((ship, index) => {
+          // Find the existing ship to preserve its speed
+          const existingShip = prevShips.find(s => s.id === ship.id);
+          return {
+            ...ship,
+          speedOverGround: existingShip ? existingShip.speedOverGround : (Math.random() * 10 + 5).toFixed(2), // Keep initial speed
           heading: ship.heading, // Keep the heading assigned in AISSimulator
           type: shipTypes[index % shipTypes.length],
           country: Object.keys(countryFlags)[index % Object.keys(countryFlags).length],
         };
-      }));
+      });
     });
-    setSimulator(aisSim);
-  }, []);
+  });
+}, []);
 
   const toggleMapTheme = () => {
     setMapTheme(mapTheme === "dark" ? "light" : "dark");
   };
 
+
+// Render JSX elements
   return (
     <div>
       {/* Button to toggle map theme using an icon */}
@@ -99,6 +136,8 @@ const App = () => {
             const endLat = ship.latitude + lineLength * Math.cos(radianHeading);
             const endLng = ship.longitude + lineLength * Math.sin(radianHeading);
 
+
+// Render JSX elements
             return (
               
                <React.Fragment key={ship.id || `ship-${index}`}>

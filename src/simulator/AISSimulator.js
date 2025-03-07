@@ -1,6 +1,14 @@
+// AISSimulator.js - Simulates ship movements along predefined routes.
+// Uses waypoints to animate ships, updating their position over time.
+
+// Import necessary dependencies
 import { calculateBearing } from "../utils/routeUtils";
 
+
+// Function/Class definition
 export class AISSimulator {
+
+// Define base routes and generate random ship routes
   constructor(routes, updateCallback, intervalMs = 2000) {
     this.routes = routes.map(route => Array.isArray(route) ? route : []);
     this.updateCallback = updateCallback;
@@ -22,8 +30,8 @@ export class AISSimulator {
           id: `ship-${index + 1}-${i + 1}`,
           route,
           currentWaypoint: startWaypoint,
-          latitude: startLat + (Math.random() - 0.5) * 0.05, // Slight offset
-          longitude: startLon + (Math.random() - 0.5) * 0.05, // Slight offset
+          latitude: startLat + (Math.random() - 0.5) * 0.75, // Slight offset
+          longitude: startLon + (Math.random() - 0.5) * 0.75, // Slight offset
           speedOverGround: (Math.random() * 10 + 5).toFixed(2),
           heading: Math.random() * 360,
         };
@@ -34,6 +42,8 @@ export class AISSimulator {
   startSimulation() {
     if (this.interval) return;
 
+
+// Set an interval to update simulation data periodically
     this.interval = setInterval(() => {
       this.ships = this.ships.map((ship) => {
         if (!Array.isArray(ship.route) || ship.route.length === 0) {

@@ -1,8 +1,24 @@
+// MapComponent.js - Renders the interactive map using React Leaflet.
+// Displays ships, aircraft, and range rings for ship movement prediction.
+
+// Import necessary dependencies
+
+// React hooks for managing component state and side effects
 import { useEffect, useState } from "react";
+
+// Import necessary dependencies
 import { MapContainer, TileLayer, Circle, CircleMarker, Polyline, Popup } from "react-leaflet";
+
+// Import necessary dependencies
 import { AISSimulator } from "../simulator/AISSimulator";
+
+// Import necessary dependencies
 import AircraftSimulator from "../simulator/AircraftSimulator"; 
+
+// Import necessary dependencies
 import { generateDetailedRoute, generateRandomRoutes } from "../utils/routeUtils";
+
+// Import necessary dependencies
 import "leaflet/dist/leaflet.css";
 
 const mapStyle = { height: "100vh", width: "100vw" };
@@ -14,16 +30,34 @@ const baseRoutes = [
   [{ lat: 42.8388, lon: -125.3613 }, { lat: 38.2904, lon: -128.6122 }, { lat: 37.9072, lon: -127.0369 }],
 ];
 
+
+// Define base routes and generate random ship routes
 const routes = generateRandomRoutes(baseRoutes, 7);
 
+
+// Function/Class definition
 export default function MapComponent() {
+
+// React hooks for managing component state and side effects
   const [ships, setShips] = useState([]);
+
+// React hooks for managing component state and side effects
   const [mapTheme, setMapTheme] = useState("dark");
+
+// React hooks for managing component state and side effects
   const [rangeRings, setRangeRings] = useState([]);
+
+// React hooks for managing component state and side effects
   const [selectedShipId, setSelectedShipId] = useState(null);  // Track selected ship
 
+
+// React hooks for managing component state and side effects
   useEffect(() => {
-    const detailedRoutes = routes.map(route => generateDetailedRoute(route, 15, 2000));
+
+// Define base routes and generate random ship routes
+    const detailedRoutes = routes.map(route => generateDetailedRoute(route, 15, 500));
+
+// Debugging output
     console.log(`🚢 Generated ${detailedRoutes.length} ship routes`);
 
     const aisSim = new AISSimulator(detailedRoutes, (updatedShips) => {
@@ -42,6 +76,8 @@ export default function MapComponent() {
   };
 
   const calculateRangeRings = (ship) => {
+
+// Debugging output
     console.log(`Calculating range rings for ship: ${ship.id}`);
     const { latitude, longitude, speedOverGround, heading } = ship;
     const speedMetersPerSecond = speedOverGround * 0.51444; // Convert knots to m/s
@@ -64,6 +100,8 @@ export default function MapComponent() {
     setSelectedShipId(ship.id);
   };
 
+
+// Render JSX elements
   return (
     <div>
       <button 
@@ -88,6 +126,8 @@ export default function MapComponent() {
           const endLat = ship.latitude + lineLength * Math.cos(radianHeading);
           const endLng = ship.longitude + lineLength * Math.sin(radianHeading);
 
+
+// Render JSX elements
           return (
             <CircleMarker
               key={ship.id}
