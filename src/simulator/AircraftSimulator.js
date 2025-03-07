@@ -20,9 +20,9 @@ const aircraftIcon = (mapTheme) => L.divIcon({
 });
 
 const helicopterIcon = (mapTheme) => L.divIcon({
-  className: "helicopter-icon",
-  html: `<div style='color: white; font-size: 14px; text-align: center; -webkit-text-stroke: ${mapTheme === "light" ? "1px black" : "none"};'>🚁</div>`,
-  iconSize: [22, 22],
+  className: "aircraft-icon",
+  html: `<span style='color: white; -webkit-text-stroke: ${mapTheme === "light" ? "1px black" : "none"};'>▲</span>`,
+  iconSize: [20, 20],
 });
 
 // Define flight routes between airports
